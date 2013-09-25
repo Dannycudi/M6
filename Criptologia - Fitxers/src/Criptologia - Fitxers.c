@@ -79,26 +79,29 @@ int main()
 							scanf("%d", &posicions[i]);
 						}
 
-						printf("\nEntra la paraula a desencriptar: ");
-						getchar();
-						gets(cad);
+						while(fgets(cad, sizeof(cad), f)>0) {
 
-						if (strlen(cad) % quantitat == 0) longitud = strlen(cad);
-						else longitud = (strlen(cad) % quantitat) * quantitat;
 
-						for (i = 0; i < longitud; i++) {
-							if (posicio >= quantitat) posicio = 0;
+							if (strlen(cad) % quantitat == 0) longitud = strlen(cad);
+							else longitud = (strlen(cad) % quantitat) * quantitat;
 
-							actual = i - posicio;
-							cadAux[i] = cad[actual+posicions[posicio]-1];
+							for (i = 0; i < longitud; i++) {
+								if (posicio >= quantitat) posicio = 0;
 
-							if (cadAux[i] == '-') cadAux[i] = ' ';
+								actual = i - posicio;
+								cadAux[i] = cad[actual+posicions[posicio]-1];
 
-							posicio++;
+								if (cadAux[i] == '-') cadAux[i] = ' ';
+
+								posicio++;
+							}
+
+							cadAux[i] = '\0';
+							puts(cadAux);
+							printf("\n");
 						}
 
-						cadAux[i] = '\0';
-						puts(cadAux);
+
 					} break;
 				} //End Switch Encriptar - Desencriptar
 
