@@ -16,8 +16,6 @@ int main()
 
 	FILE *f;
 
-	f = fopen("encriptats.txt", "a+");
-
 	do {
 
 		op = op_menu();
@@ -40,6 +38,8 @@ int main()
 				{
 					case 1:
 					{
+						f = fopen("encriptats.txt", "a+");
+
 						for (i = 0; i < quantitat; i++) {
 							printf("\nEntra el %d dígit per l'ordre: ", i+1);
 							scanf("%d", &posicions[i]);
@@ -67,20 +67,26 @@ int main()
 						puts(cadAux);
 
 						fputs(cadAux, f);
+						fprintf(f, "\n");
 
-						printf("\nEncriptació guardada amb éxit!");
+						printf("\nEncriptació guardada amb éxit!\n\n");
 
+						fclose(f);
 					}
 					break;
 					case 2: {
+
+						f = fopen("encriptats.txt", "r");
 
 						for (i = 0; i < quantitat; i++) {
 							printf("\nEntra el %d dígit per l'ordre: ", i+1);
 							scanf("%d", &posicions[i]);
 						}
 
-						while(fgets(cad, sizeof(cad), f)>0) {
+						while(fgets(cad, sizeof(char[100]), f)>0) {
 
+
+							printf("%s\n", cad);
 
 							if (strlen(cad) % quantitat == 0) longitud = strlen(cad);
 							else longitud = (strlen(cad) % quantitat) * quantitat;
@@ -98,9 +104,10 @@ int main()
 
 							cadAux[i] = '\0';
 							puts(cadAux);
-							printf("\n");
+
 						}
 
+						fclose(f);
 
 					} break;
 				} //End Switch Encriptar - Desencriptar
@@ -110,7 +117,7 @@ int main()
 
 	} while (op != 5);
 
-	fclose(f);
+
 
     return 0;
 }
