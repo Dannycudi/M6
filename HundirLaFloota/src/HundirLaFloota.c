@@ -30,6 +30,10 @@ struct Joc
 	char submariD[3];
 };
 
+// Mirar si es posible haciendo una estructura para cada tipo de barco
+// y generar una estructura madre que contenga cada una de las diferentes estructuras de barco.
+typedef struct Joc dades;
+
 void carregarConfig();
 int opcioMeu();
 char getColumna(char cad[10]);
@@ -42,8 +46,8 @@ int main(void) {
 	int op;
 
 	do {
-
-		op = opcioMenu();
+		op = 1;
+		//op = opcioMenu();
 
 	} while(op < 1 || op > 6);
 
@@ -65,11 +69,11 @@ void carregarConfig() {
 	else {
 
 		cfg = fopen("cfg.txt", "r+");
-		char cadena[100];
+		char cadena[200];
 
 		while (!feof(cfg))
 		{
-			fread(cadena, sizeof(char), 100, cfg);
+			fread(cadena, sizeof(char), 150, cfg);
 			printf("%s\n", cadena);
 		}
 
