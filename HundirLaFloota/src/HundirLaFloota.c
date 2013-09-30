@@ -1,10 +1,10 @@
 /*
  ============================================================================
  Name        : HundirLaFloota.c
- Author      :
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
+ Author      : Dannycudi
+ Version     : 1.0
+ Copyright   : Dannycudi
+ Description : Juego de hundir la flota.
  ============================================================================
  */
 
@@ -15,20 +15,66 @@
 #include <ctype.h>
 #include "boolean.h"
 
+struct Joc
+{
+	char files[3];
+	char columnes[3];
+	char portavions[15];
+	char destructorA[11];
+	char destructorB[11];
+	char fragataA[7];
+	char fragataB[7];
+	char submariA[3];
+	char submariB[3];
+	char submariC[3];
+	char submariD[3];
+};
+
+void carregarConfig();
+int opcioMeu();
 char getColumna(char cad[10]);
 int getFila(char cad[10]);
 boolean posicioValida(char cad[10]);
 
 int main(void) {
 
-	char posicio[10] = "AC15";
-	char columna = getColumna(posicio);
-	int fila = getFila(posicio);
+	carregarConfig();
+	int op;
 
-	if (posicioValida(posicio)) printf("%c - %d", columna, fila);
-	else printf("La posició no es vàlida!");
+	do {
+
+		op = opcioMenu();
+
+	} while(op < 1 || op > 6);
 
 	return 0;
+
+}
+
+void carregarConfig() {
+
+	FILE *cfg;
+	long int mida;
+
+	cfg = fopen("cfg.txt", "a+");
+	fseek(cfg, 0L, SEEK_END);
+	mida=ftell(cfg);
+	fclose(cfg);
+
+	if (mida == 0) printf("S'ha de crear la configuració.");
+	else {
+
+		cfg = fopen("cfg.txt", "r+");
+		char cadena[100];
+
+		while (!feof(cfg))
+		{
+			fread(cadena, sizeof(char), 100, cfg);
+			printf("%s\n", cadena);
+		}
+
+		fclose(cfg);
+	}
 
 }
 
