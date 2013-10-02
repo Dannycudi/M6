@@ -15,26 +15,34 @@
 #include <ctype.h>
 #include "boolean.h"
 
+struct Cordenades
+{
+	char fila;
+	int columna;
+};
+
+typedef struct Cordenades cordenada;
+
 struct Joc
 {
 	int files;
 	int columnes;
-	char portavions[15];
-	char destructorA[11];
-	char destructorB[11];
-	char fragataA[7];
-	char fragataB[7];
-	char submariA[3];
-	char submariB[3];
-	char submariC[3];
-	char submariD[3];
+	cordenada portavions[3];
+	cordenada destructorA[3];
+	cordenada destructorB[3];
+	cordenada fragataA[2];
+	cordenada fragataB[2];
+	cordenada submariA[1];
+	cordenada submariB[1];
+	cordenada submariC[1];
+	cordenada submariD[1];
 };
 
 // Mirar si es posible haciendo una estructura para cada tipo de barco
 // y generar una estructura madre que contenga cada una de las diferentes estructuras de barco.
-typedef struct Joc dades;
+typedef struct Joc joc;
 
-void carregarConfig();
+void carregarConfig(joc *dades);
 void imprimirTaulell();
 int opcioMeu();
 char getColumna(char cad[10]);
@@ -42,8 +50,10 @@ int getFila(char cad[10]);
 boolean posicioValida(char cad[10]);
 
 int main(void) {
+	joc dades;
+	cordenada cord;
+	carregarConfig(&dades);
 
-	carregarConfig();
 	int op;
 
 	do {
@@ -62,7 +72,7 @@ void imprimirTaulell() {
 
 }
 
-void carregarConfig() {
+void carregarConfig(joc *dades) {
 
 	FILE *cfg;
 	long int mida;
@@ -81,10 +91,9 @@ void carregarConfig() {
 //		while (!feof(cfg))
 //		{
 			fread(cadena, sizeof(char), 13, cfg);
-			int filas, columnas;
-			filas = atoi(&cadena[7]);
-			columnas = atoi(&cadena[11]);
-			printf("%d - %d\n", filas, columnas);
+			dades->columnes = atoi(&cadena[11]);
+			dades->files = atoi(&cadena[7]);
+			printf("%d - %d\n", dades->files, dades->columnes);
 //		}
 
 		fclose(cfg);
