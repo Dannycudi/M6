@@ -27,7 +27,7 @@ struct Joc
 {
 	int files;
 	int columnes;
-	cordenada portavions[3];
+	cordenada portavions[4];
 	cordenada destructorA[3];
 	cordenada destructorB[3];
 	cordenada fragataA[2];
@@ -53,6 +53,10 @@ int main(void) {
 	joc dades;
 	cordenada cord;
 	carregarConfig(&dades);
+	int i;
+	for (i = 0; i < 4; i++) {
+		printf("Fila - %c \t Columna - %d\n", dades.portavions[i].fila, dades.portavions[i].columna);
+	}
 
 	int op;
 
@@ -86,7 +90,9 @@ void carregarConfig(joc *dades) {
 	else {
 
 		cfg = fopen("cfg.txt", "r+");
-		char cadena[200];
+		char cadena[200], letra;
+		int numero, i, cont;
+		cordenada cord;
 
 //		while (!feof(cfg))
 //		{
@@ -94,6 +100,17 @@ void carregarConfig(joc *dades) {
 			dades->columnes = atoi(&cadena[11]);
 			dades->files = atoi(&cadena[7]);
 			printf("%d - %d\n", dades->files, dades->columnes);
+			fread(cadena, sizeof(char), 26, cfg);
+			cont = 12;
+			for (i = 0; i < 4; i++) {
+				letra = cadena[cont];
+				numero = atoi(&cadena[cont+1]);
+				dades->portavions[i].fila = letra;
+				dades->portavions[i].columna = numero;
+				cont = cont + 4;
+			}
+
+			printf("%c - %d", letra, numero);
 //		}
 
 		fclose(cfg);
