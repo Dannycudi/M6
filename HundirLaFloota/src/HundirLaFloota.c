@@ -17,8 +17,8 @@
 
 struct Joc
 {
-	char files[3];
-	char columnes[3];
+	int files;
+	int columnes;
 	char portavions[15];
 	char destructorA[11];
 	char destructorB[11];
@@ -35,6 +35,7 @@ struct Joc
 typedef struct Joc dades;
 
 void carregarConfig();
+void imprimirTaulell();
 int opcioMeu();
 char getColumna(char cad[10]);
 int getFila(char cad[10]);
@@ -55,6 +56,12 @@ int main(void) {
 
 }
 
+void imprimirTaulell() {
+
+
+
+}
+
 void carregarConfig() {
 
 	FILE *cfg;
@@ -71,11 +78,14 @@ void carregarConfig() {
 		cfg = fopen("cfg.txt", "r+");
 		char cadena[200];
 
-		while (!feof(cfg))
-		{
-			fread(cadena, sizeof(char), 150, cfg);
-			printf("%s\n", cadena);
-		}
+//		while (!feof(cfg))
+//		{
+			fread(cadena, sizeof(char), 13, cfg);
+			int filas, columnas;
+			filas = atoi(&cadena[7]);
+			columnas = atoi(&cadena[11]);
+			printf("%d - %d\n", filas, columnas);
+//		}
 
 		fclose(cfg);
 	}
