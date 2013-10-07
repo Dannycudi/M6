@@ -39,7 +39,10 @@ struct Joc
 // y generar una estructura madre que contenga cada una de las diferentes estructuras de barco.
 typedef struct Joc joc;
 
+void mostrarConfig(joc dades);
 void carregarConfig(joc *dades);
+void crearConfig(joc *dades);
+int midaFitxer(char *f);
 void imprimirTaulell();
 int digitsNumero(int numero);
 int opcioMeu();
@@ -48,11 +51,35 @@ int getFila(char cad[10]);
 boolean posicioValida(char cad[10]);
 
 int main(void) {
-	joc dades;
-	cordenada cord;
-	carregarConfig(&dades);
-	int i;
 
+	joc dades;
+
+	if (midaFitxer("cfg.txt")) carregarConfig(&dades);
+	else crearConfig(&dades);
+
+	mostrarConfig(dades);
+
+	int op;
+
+	do {
+		op = 1;
+		//op = opcioMenu();
+
+	} while(op < 1 || op > 6);
+
+	return 0;
+
+}
+
+void imprimirTaulell() {
+
+
+
+}
+
+void mostrarConfig(joc dades) {
+
+	int i;
 
 	printf("Taulell\n%d - %d\n", dades.files, dades.columnes);
 	printf("\nPortavions\n");
@@ -80,114 +107,92 @@ int main(void) {
 		printf("Fila - %c \t Columna - %d\n", dades.submarins[i][0].fila, dades.submarins[i][0].columna);
 	}
 
-	int op;
-
-	do {
-		op = 1;
-		//op = opcioMenu();
-
-	} while(op < 1 || op > 6);
-
-	return 0;
-
-}
-
-void imprimirTaulell() {
-
-
-
 }
 
 void carregarConfig(joc *dades) {
 
 	FILE *cfg;
-	long int mida;
 
-	cfg = fopen("cfg.txt", "a+");
-	fseek(cfg, 0L, SEEK_END);
-	mida=ftell(cfg);
+	cfg = fopen("cfg.txt", "r+");
+	char cadena[200], letra;
+	int numero, i, cont;
+
+	//Taulell - fread(cadena, sizeof(char), 14, cfg);
+	fgets(cadena, 81, cfg);
+	dades->columnes = atoi(&cadena[11]);
+	dades->files = atoi(&cadena[7]);
+
+	//Portavions - fread(cadena, sizeof(char), 27, cfg);
+	fgets(cadena, 81, cfg);
+	cont = 11;
+	for (i = 0; i < 4; i++) {
+		letra = cadena[cont];
+		numero = atoi(&cadena[cont+1]);
+		dades->portavions[i].fila = letra;
+		dades->portavions[i].columna = numero;
+		cont = cont + 2 + digitsNumero(numero);
+	}
+
+	//DestructorA - fread(cadena, sizeof(char), 23, cfg);
+	fgets(cadena, 81, cfg);
+	cont = 12;
+	for (i = 0; i < 3; i++) {
+		letra = cadena[cont];
+		numero = atoi(&cadena[cont+1]);
+		dades->destructorA[i].fila = letra;
+		dades->destructorA[i].columna = numero;
+		cont = cont + 2 + digitsNumero(numero);
+	}
+
+	//DestructorB - fread(cadena, sizeof(char), 23, cfg);
+	fgets(cadena, 81, cfg);
+	cont = 12;
+	for (i = 0; i < 3; i++) {
+		letra = cadena[cont];
+		numero = atoi(&cadena[cont+1]);
+		dades->destructorB[i].fila = letra;
+		dades->destructorB[i].columna = numero;
+		cont = cont + 2 + digitsNumero(numero);
+	}
+
+	//FragataA - fread(cadena, sizeof(char), 15, cfg);
+	fgets(cadena, 81, cfg);
+	cont = 9;
+	for (i = 0; i < 2; i++) {
+		letra = cadena[cont];
+		numero = atoi(&cadena[cont+1]);
+		dades->fragataA[i].fila = letra;
+		dades->fragataA[i].columna = numero;
+		cont = cont + 2 + digitsNumero(numero);
+	}
+
+	//FragataB - fread(cadena, sizeof(char), 15, cfg);
+	fgets(cadena, 81, cfg);
+	cont = 9;
+	for (i = 0; i < 2; i++) {
+		letra = cadena[cont];
+		numero = atoi(&cadena[cont+1]);
+		dades->fragataB[i].fila = letra;
+		dades->fragataB[i].columna = numero;
+		cont = cont + 2 + digitsNumero(numero);
+	}
+
+	//Submarins - fread(cadena, sizeof(char), 23, cfg);
+	fgets(cadena, 81, cfg);
+	cont = 8;
+	for (i = 0; i < 4; i++) {
+		letra = cadena[cont];
+		numero = atoi(&cadena[cont+1]);
+		dades->submarins[i][0].fila = letra;
+		dades->submarins[i][0].columna = numero;
+		cont = cont + 2 + digitsNumero(numero);
+	}
+
 	fclose(cfg);
 
-	if (mida == 0) printf("S'ha de crear la configuració.");
-	else {
+}
 
-		cfg = fopen("cfg.txt", "r+");
-		char cadena[200], letra;
-		int numero, i, cont;
-
-		//Taulell - fread(cadena, sizeof(char), 14, cfg);
-		fgets(cadena, 81, cfg);
-		dades->columnes = atoi(&cadena[11]);
-		dades->files = atoi(&cadena[7]);
-
-		//Portavions - fread(cadena, sizeof(char), 27, cfg);
-		fgets(cadena, 81, cfg);
-		cont = 11;
-		for (i = 0; i < 4; i++) {
-			letra = cadena[cont];
-			numero = atoi(&cadena[cont+1]);
-			dades->portavions[i].fila = letra;
-			dades->portavions[i].columna = numero;
-			cont = cont + 2 + digitsNumero(numero);
-		}
-
-		//DestructorA - fread(cadena, sizeof(char), 23, cfg);
-		fgets(cadena, 81, cfg);
-		cont = 12;
-		for (i = 0; i < 3; i++) {
-			letra = cadena[cont];
-			numero = atoi(&cadena[cont+1]);
-			dades->destructorA[i].fila = letra;
-			dades->destructorA[i].columna = numero;
-			cont = cont + 2 + digitsNumero(numero);
-		}
-
-		//DestructorB - fread(cadena, sizeof(char), 23, cfg);
-		fgets(cadena, 81, cfg);
-		cont = 13;
-		for (i = 0; i < 3; i++) {
-			letra = cadena[cont];
-			numero = atoi(&cadena[cont+1]);
-			dades->destructorB[i].fila = letra;
-			dades->destructorB[i].columna = numero;
-			cont = cont + 2 + digitsNumero(numero);
-		}
-
-		//FragataA - fread(cadena, sizeof(char), 15, cfg);
-		fgets(cadena, 81, cfg);
-		cont = 8;
-		for (i = 0; i < 2; i++) {
-			letra = cadena[cont];
-			numero = atoi(&cadena[cont+1]);
-			dades->fragataA[i].fila = letra;
-			dades->fragataA[i].columna = numero;
-			cont = cont + 2 + digitsNumero(numero);
-		}
-
-		//FragataB - fread(cadena, sizeof(char), 15, cfg);
-		fgets(cadena, 81, cfg);
-		cont = 8;
-		for (i = 0; i < 2; i++) {
-			letra = cadena[cont];
-			numero = atoi(&cadena[cont+1]);
-			dades->fragataB[i].fila = letra;
-			dades->fragataB[i].columna = numero;
-			cont = cont + 2 + digitsNumero(numero);
-		}
-
-		//Submarins - fread(cadena, sizeof(char), 23, cfg);
-		fgets(cadena, 81, cfg);
-		cont = 7;
-		for (i = 0; i < 4; i++) {
-			letra = cadena[cont];
-			numero = atoi(&cadena[cont+1]);
-			dades->submarins[i][0].fila = letra;
-			dades->submarins[i][0].columna = numero;
-			cont = cont + 2 + digitsNumero(numero);
-		}
-
-		fclose(cfg);
-	}
+void crearConfig(joc *dades) {
 
 }
 
@@ -235,4 +240,22 @@ int digitsNumero(int numero) {
 	}
 
 	return cont;
+}
+
+int midaFitxer(char *f) {
+
+	int mida;
+	FILE *cfg;
+	cfg = fopen(f, "a+");
+	fseek(cfg, 0L, SEEK_END);
+	mida=ftell(cfg);
+	fclose(cfg);
+
+	return mida;
+}
+
+int opcioMeu() {
+
+
+	return 0;
 }
