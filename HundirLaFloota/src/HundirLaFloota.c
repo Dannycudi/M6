@@ -114,81 +114,77 @@ void carregarConfig(joc *dades) {
 		cfg = fopen("cfg.txt", "r+");
 		char cadena[200], letra;
 		int numero, i, cont;
-		cordenada cord;
 
-//		while (!feof(cfg))
-//		{
-			fread(cadena, sizeof(char), 14, cfg);
-			dades->columnes = atoi(&cadena[11]);
-			dades->files = atoi(&cadena[7]);
+		//Taulell - fread(cadena, sizeof(char), 14, cfg);
+		fgets(cadena, 81, cfg);
+		dades->columnes = atoi(&cadena[11]);
+		dades->files = atoi(&cadena[7]);
 
-			//Portavions
-			fread(cadena, sizeof(char), 27, cfg);
-			cont = 11;
-			for (i = 0; i < 4; i++) {
-				letra = cadena[cont];
-				numero = atoi(&cadena[cont+1]);
-				dades->portavions[i].fila = letra;
-				dades->portavions[i].columna = numero;
-				cont = cont + 2 + digitsNumero(numero);
-			}
+		//Portavions - fread(cadena, sizeof(char), 27, cfg);
+		fgets(cadena, 81, cfg);
+		cont = 11;
+		for (i = 0; i < 4; i++) {
+			letra = cadena[cont];
+			numero = atoi(&cadena[cont+1]);
+			dades->portavions[i].fila = letra;
+			dades->portavions[i].columna = numero;
+			cont = cont + 2 + digitsNumero(numero);
+		}
 
-			//DestructorA
-			fread(cadena, sizeof(char), 23, cfg);
-			cont = 12;
-			for (i = 0; i < 3; i++) {
-				letra = cadena[cont];
-				numero = atoi(&cadena[cont+1]);
-				dades->destructorA[i].fila = letra;
-				dades->destructorA[i].columna = numero;
-				cont = cont + 2 + digitsNumero(numero);
-			}
+		//DestructorA - fread(cadena, sizeof(char), 23, cfg);
+		fgets(cadena, 81, cfg);
+		cont = 12;
+		for (i = 0; i < 3; i++) {
+			letra = cadena[cont];
+			numero = atoi(&cadena[cont+1]);
+			dades->destructorA[i].fila = letra;
+			dades->destructorA[i].columna = numero;
+			cont = cont + 2 + digitsNumero(numero);
+		}
 
-			//DestructorB
-			fread(cadena, sizeof(char), 23, cfg);
-			cont = 13;
-			for (i = 0; i < 3; i++) {
-				letra = cadena[cont];
-				numero = atoi(&cadena[cont+1]);
-				dades->destructorB[i].fila = letra;
-				dades->destructorB[i].columna = numero;
-				cont = cont + 2 + digitsNumero(numero);
-			}
+		//DestructorB - fread(cadena, sizeof(char), 23, cfg);
+		fgets(cadena, 81, cfg);
+		cont = 13;
+		for (i = 0; i < 3; i++) {
+			letra = cadena[cont];
+			numero = atoi(&cadena[cont+1]);
+			dades->destructorB[i].fila = letra;
+			dades->destructorB[i].columna = numero;
+			cont = cont + 2 + digitsNumero(numero);
+		}
 
-			//FragataA
-			fread(cadena, sizeof(char), 15, cfg);
-			cont = 8;
-			for (i = 0; i < 2; i++) {
-				letra = cadena[cont];
-				numero = atoi(&cadena[cont+1]);
-				dades->fragataA[i].fila = letra;
-				dades->fragataA[i].columna = numero;
-				cont = cont + 2 + digitsNumero(numero);
-			}
+		//FragataA - fread(cadena, sizeof(char), 15, cfg);
+		fgets(cadena, 81, cfg);
+		cont = 8;
+		for (i = 0; i < 2; i++) {
+			letra = cadena[cont];
+			numero = atoi(&cadena[cont+1]);
+			dades->fragataA[i].fila = letra;
+			dades->fragataA[i].columna = numero;
+			cont = cont + 2 + digitsNumero(numero);
+		}
 
-			//FragataB
-			fread(cadena, sizeof(char), 15, cfg);
-			cont = 8;
-			for (i = 0; i < 2; i++) {
-				letra = cadena[cont];
-				numero = atoi(&cadena[cont+1]);
-				dades->fragataB[i].fila = letra;
-				dades->fragataB[i].columna = numero;
-				cont = cont + 2 + digitsNumero(numero);
-			}
+		//FragataB - fread(cadena, sizeof(char), 15, cfg);
+		fgets(cadena, 81, cfg);
+		cont = 8;
+		for (i = 0; i < 2; i++) {
+			letra = cadena[cont];
+			numero = atoi(&cadena[cont+1]);
+			dades->fragataB[i].fila = letra;
+			dades->fragataB[i].columna = numero;
+			cont = cont + 2 + digitsNumero(numero);
+		}
 
-			//Submarins
-			fread(cadena, sizeof(char), 23, cfg);
-			cont = 7;
-			for (i = 0; i < 4; i++) {
-				letra = cadena[cont];
-				numero = atoi(&cadena[cont+1]);
-				dades->submarins[i][0].fila = letra;
-				dades->submarins[i][0].columna = numero;
-				cont = cont + 2 + digitsNumero(numero);
-			}
-
-//		}
+		//Submarins - fread(cadena, sizeof(char), 23, cfg);
+		fgets(cadena, 81, cfg);
+		cont = 7;
+		for (i = 0; i < 4; i++) {
+			letra = cadena[cont];
+			numero = atoi(&cadena[cont+1]);
+			dades->submarins[i][0].fila = letra;
+			dades->submarins[i][0].columna = numero;
+			cont = cont + 2 + digitsNumero(numero);
+		}
 
 		fclose(cfg);
 	}
@@ -207,11 +203,13 @@ boolean posicioValida(char cad[10]) {
 	return FALSE;
 
 }
+
 char getColumna(char cad[10]) {
 
 	return cad[0];
 
 }
+
 int getFila(char cad[10]) {
 
 	char cadena[10] = "";
@@ -226,6 +224,7 @@ int getFila(char cad[10]) {
 	return atoi(cadena);
 
 }
+
 int digitsNumero(int numero) {
 
 	int cont = 0;
