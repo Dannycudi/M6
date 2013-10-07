@@ -44,6 +44,7 @@ typedef struct Joc joc;
 
 void carregarConfig(joc *dades);
 void imprimirTaulell();
+int digitsNumero(int numero);
 int opcioMeu();
 char getColumna(char cad[10]);
 int getFila(char cad[10]);
@@ -54,8 +55,20 @@ int main(void) {
 	cordenada cord;
 	carregarConfig(&dades);
 	int i;
+
+
+	printf("Taulell\n%d - %d\n", dades.files, dades.columnes);
+	printf("\nPortavions\n");
 	for (i = 0; i < 4; i++) {
 		printf("Fila - %c \t Columna - %d\n", dades.portavions[i].fila, dades.portavions[i].columna);
+	}
+	printf("\nDestructorA\n");
+	for (i = 0; i < 3; i++) {
+		printf("Fila - %c \t Columna - %d\n", dades.destructorA[i].fila, dades.destructorA[i].columna);
+	}
+	printf("\nDestructorB\n");
+	for (i = 0; i < 3; i++) {
+		printf("Fila - %c \t Columna - %d\n", dades.destructorB[i].fila, dades.destructorB[i].columna);
 	}
 
 	int op;
@@ -96,21 +109,43 @@ void carregarConfig(joc *dades) {
 
 //		while (!feof(cfg))
 //		{
-			fread(cadena, sizeof(char), 13, cfg);
+			fread(cadena, sizeof(char), 14, cfg);
 			dades->columnes = atoi(&cadena[11]);
 			dades->files = atoi(&cadena[7]);
-			printf("%d - %d\n", dades->files, dades->columnes);
-			fread(cadena, sizeof(char), 26, cfg);
-			cont = 12;
+
+			//Portavions
+			fread(cadena, sizeof(char), 27, cfg);
+			cont = 11;
 			for (i = 0; i < 4; i++) {
 				letra = cadena[cont];
 				numero = atoi(&cadena[cont+1]);
 				dades->portavions[i].fila = letra;
 				dades->portavions[i].columna = numero;
-				cont = cont + 4;
+				cont = cont + 2 + digitsNumero(numero);
 			}
 
-			printf("%c - %d", letra, numero);
+			//DestructorA
+			fread(cadena, sizeof(char), 23, cfg);
+			cont = 12;
+			for (i = 0; i < 3; i++) {
+				letra = cadena[cont];
+				numero = atoi(&cadena[cont+1]);
+				dades->destructorA[i].fila = letra;
+				dades->destructorA[i].columna = numero;
+				cont = cont + 2 + digitsNumero(numero);
+			}
+
+			//DestructorB
+			fread(cadena, sizeof(char), 23, cfg);
+			cont = 13;
+			for (i = 0; i < 3; i++) {
+				letra = cadena[cont];
+				numero = atoi(&cadena[cont+1]);
+				dades->destructorB[i].fila = letra;
+				dades->destructorB[i].columna = numero;
+				cont = cont + 2 + digitsNumero(numero);
+			}
+
 //		}
 
 		fclose(cfg);
@@ -148,4 +183,15 @@ int getFila(char cad[10]) {
 
 	return atoi(cadena);
 
+}
+int digitsNumero(int numero) {
+
+	int cont = 0;
+
+	while (numero>0) {
+		numero = numero / 10;
+		cont++;
+	}
+
+	return cont;
 }
