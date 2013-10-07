@@ -32,10 +32,7 @@ struct Joc
 	cordenada destructorB[3];
 	cordenada fragataA[2];
 	cordenada fragataB[2];
-	cordenada submariA[1];
-	cordenada submariB[1];
-	cordenada submariC[1];
-	cordenada submariD[1];
+	cordenada submarins[4][1];
 };
 
 // Mirar si es posible haciendo una estructura para cada tipo de barco
@@ -69,6 +66,18 @@ int main(void) {
 	printf("\nDestructorB\n");
 	for (i = 0; i < 3; i++) {
 		printf("Fila - %c \t Columna - %d\n", dades.destructorB[i].fila, dades.destructorB[i].columna);
+	}
+	printf("\nFragataA\n");
+	for (i = 0; i < 2; i++) {
+		printf("Fila - %c \t Columna - %d\n", dades.fragataA[i].fila, dades.fragataA[i].columna);
+	}
+	printf("\nFragataB\n");
+	for (i = 0; i < 2; i++) {
+		printf("Fila - %c \t Columna - %d\n", dades.fragataB[i].fila, dades.fragataB[i].columna);
+	}
+	printf("\nSubmarins\n");
+	for (i = 0; i < 4; i++) {
+		printf("Fila - %c \t Columna - %d\n", dades.submarins[i][0].fila, dades.submarins[i][0].columna);
 	}
 
 	int op;
@@ -143,6 +152,39 @@ void carregarConfig(joc *dades) {
 				numero = atoi(&cadena[cont+1]);
 				dades->destructorB[i].fila = letra;
 				dades->destructorB[i].columna = numero;
+				cont = cont + 2 + digitsNumero(numero);
+			}
+
+			//FragataA
+			fread(cadena, sizeof(char), 15, cfg);
+			cont = 8;
+			for (i = 0; i < 2; i++) {
+				letra = cadena[cont];
+				numero = atoi(&cadena[cont+1]);
+				dades->fragataA[i].fila = letra;
+				dades->fragataA[i].columna = numero;
+				cont = cont + 2 + digitsNumero(numero);
+			}
+
+			//FragataB
+			fread(cadena, sizeof(char), 15, cfg);
+			cont = 8;
+			for (i = 0; i < 2; i++) {
+				letra = cadena[cont];
+				numero = atoi(&cadena[cont+1]);
+				dades->fragataB[i].fila = letra;
+				dades->fragataB[i].columna = numero;
+				cont = cont + 2 + digitsNumero(numero);
+			}
+
+			//Submarins
+			fread(cadena, sizeof(char), 23, cfg);
+			cont = 7;
+			for (i = 0; i < 4; i++) {
+				letra = cadena[cont];
+				numero = atoi(&cadena[cont+1]);
+				dades->submarins[i][0].fila = letra;
+				dades->submarins[i][0].columna = numero;
 				cont = cont + 2 + digitsNumero(numero);
 			}
 
