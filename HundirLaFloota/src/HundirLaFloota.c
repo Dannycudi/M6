@@ -8,12 +8,16 @@
  ============================================================================
  */
 
+//AIGUA normal es '-'   AIGUA tocada  '*'    TOCAT 'T'    ENFONSAT  'E'
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
 #include "boolean.h"
+
+#define MAX 25
 
 struct Cordenades
 {
@@ -33,6 +37,7 @@ struct Joc
 	cordenada fragataA[2];
 	cordenada fragataB[2];
 	cordenada submarins[4][1];
+	char taulell[MAX][MAX];
 };
 
 // Mirar si es posible haciendo una estructura para cada tipo de barco
@@ -42,22 +47,29 @@ typedef struct Joc joc;
 void mostrarConfig(joc dades);
 void carregarConfig(joc *dades);
 void crearConfig(joc *dades);
-void imprimirTaulell();
+void omplirTaulell(joc *dades);
+void imprimirTaulell(joc dades);
+boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida);
 int digitsNumero(int numero);
 int midaFitxer(char *f);
 int opcioMeu();
-char getColumna(char cad[10]);
-int getFila(char cad[10]);
+char getFila(char cad[10]);
+int getColumna(char cad[10]);
 boolean posicioValida(char cad[10]);
 
 int main(void) {
 
 	joc dades;
 
-	if (midaFitxer("cfg.txt")) carregarConfig(&dades);
-	else crearConfig(&dades);
+//	if (midaFitxer("cfg.txt")) carregarConfig(&dades);
+//	else crearConfig(&dades);
 
-	mostrarConfig(dades);
+	crearConfig(&dades);
+
+	//mostrarConfig(dades);
+
+//	omplirTaulell(&dades);
+//	imprimirTaulell(dades);
 
 	int op;
 
@@ -71,9 +83,29 @@ int main(void) {
 
 }
 
-void imprimirTaulell() {
+void omplirTaulell(joc *dades) {
 
+	int i, j;
 
+	for (i = 0; i < dades->files; i++) {
+		for (j = 0; j < dades->columnes; j++) {
+			dades->taulell[i][j] = '-';
+		}
+	}
+
+}
+
+void imprimirTaulell(joc dades) {
+
+	int i, j;
+	printf("\n\n\n");
+	for (i = 0; i < dades.files; i++) {
+		printf("\t");
+		for (j = 0; j < dades.columnes; j++) {
+			printf("%c ", dades.taulell[i][j]);
+		}
+		printf("\n");
+	}
 
 }
 
@@ -194,6 +226,45 @@ void carregarConfig(joc *dades) {
 
 void crearConfig(joc *dades) {
 
+	char cordenades[4][4];
+
+	printf("\nCreació del fitxer de configuració");
+
+	printf("\n\nCreació del Taulell\n");
+	do {
+		printf("Entra el numero de filas: ");
+		scanf("%d", &dades->files);
+	} while(dades->files < 0 || dades->files > MAX);
+
+	do {
+		printf("Entra el numero de columnas: ");
+		scanf("%d", &dades->columnes);
+	} while(dades->columnes < 0 || dades->columnes > MAX);
+
+	printf("\n\nCreació de les embarcacions!\n");
+
+	printf("\nPortavions -> Entra les 4 cordenades separades per un espai: ");
+	scanf("%s %s %s %s", cordenades[0], cordenades[1], cordenades[2], cordenades[3]);
+
+	printf("%c %d\n", getFila(cordenades[0]), getColumna(cordenades[0]));
+
+
+}
+
+boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida) {
+
+	int i, iFila, iColumna;
+	boolean correcte = TRUE;
+
+	for (i = 0; i < mida; i++) {
+
+		if (getFila(cordenades[i]) > 'A' + MAX) correcte = FALSE;
+		else if (getColumna(cordenades[i]) > MAX) correcte = FALSE;
+
+	}
+
+	return TRUE;
+
 }
 
 boolean posicioValida(char cad[10]) {
@@ -209,13 +280,13 @@ boolean posicioValida(char cad[10]) {
 
 }
 
-char getColumna(char cad[10]) {
+char getFila(char cad[10]) {
 
 	return cad[0];
 
 }
 
-int getFila(char cad[10]) {
+int getColumna(char cad[10]) {
 
 	char cadena[10] = "";
 	int i;
@@ -255,7 +326,6 @@ int midaFitxer(char *f) {
 }
 
 int opcioMeu() {
-
 
 	return 0;
 }

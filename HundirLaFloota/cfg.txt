@@ -1,4 +1,4 @@
-taulell 22x16
+taulell 20x20
 portavions a13,a14,a15,a16
 destructor1 b13,b14,b15
 destructor2 b2,b3,b4
