@@ -49,7 +49,7 @@ void carregarConfig(joc *dades);
 void crearConfig(joc *dades);
 void omplirTaulell(joc *dades);
 void imprimirTaulell(joc dades);
-boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida);
+boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida, int alineacio);
 int digitsNumero(int numero);
 int midaFitxer(char *f);
 int opcioMeu();
@@ -227,6 +227,7 @@ void carregarConfig(joc *dades) {
 void crearConfig(joc *dades) {
 
 	char cordenades[4][4];
+	int alineacio;
 
 	printf("\nCreació del fitxer de configuració");
 
@@ -243,27 +244,56 @@ void crearConfig(joc *dades) {
 
 	printf("\n\nCreació de les embarcacions!\n");
 
-	printf("\nPortavions -> Entra les 4 cordenades separades per un espai: ");
-	scanf("%s %s %s %s", cordenades[0], cordenades[1], cordenades[2], cordenades[3]);
+	do {
+
+		printf("\nPortavions");
+		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal)");
+		scanf("%d", &alineacio);
+		printf("\nEntra les 4 cordenades separades per un espai: ");
+		scanf("%s %s %s %s", cordenades[0], cordenades[1], cordenades[2], cordenades[3]);
+
+	} while(!comprovaEmbarcacio(*dades, cordenades, 4, alineacio));
 
 	printf("%c %d\n", getFila(cordenades[0]), getColumna(cordenades[0]));
 
 
 }
 
-boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida) {
+boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida, int alineacio) {
 
-	int i, iFila, iColumna;
+	int i, c;
+	char f;
 	boolean correcte = TRUE;
 
-	for (i = 0; i < mida; i++) {
+	//Alineació | -1 - Error | 0 - Horizontal | 1 - Vertical | 2 - Diagonal
 
-		if (getFila(cordenades[i]) > 'A' + MAX) correcte = FALSE;
-		else if (getColumna(cordenades[i]) > MAX) correcte = FALSE;
+	f = getFila(cordenades[0]);
+	c = getColumna(cordenades[0]);
+	for (i = 1; i < mida; i++) {
+
+		switch (alineacio) {
+			case 0:
+				if ((getFila(cordenades[i]) != f || getColumna(cordenades[i]) != c + i) && (getFila(cordenades[i]) != f || getColumna(cordenades[i]) != c - i)) correcte = FALSE;
+			break;
+			case 1:
+				if ((getFila(cordenades[i]) != f + i || getColumna(cordenades[i]) != c) && (getFila(cordenades[i]) != f - i || getColumna(cordenades[i]) != c)) correcte = FALSE;
+			break;
+			case 2:
+				correcte = FALSE;
+			break;
+		}
 
 	}
 
-	return TRUE;
+	for (i = 0; i < mida; i++) {
+
+		if (!posicioValida(cordenades[i])) correcte = FALSE;
+		if (getFila(cordenades[i]) > 'A' + dades.files) correcte = FALSE;
+		else if (getColumna(cordenades[i]) > dades.columnes) correcte = FALSE;
+
+	}
+
+	return correcte;
 
 }
 
