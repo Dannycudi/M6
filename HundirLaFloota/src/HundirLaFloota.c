@@ -49,6 +49,7 @@ void carregarConfig(joc *dades);
 void crearConfig(joc *dades);
 void omplirTaulell(joc *dades);
 void imprimirTaulell(joc dades);
+void marcarTaulell(joc *dades, char cordenades[4][4], int mida);
 boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida, int alineacio);
 int digitsNumero(int numero);
 int midaFitxer(char *f);
@@ -63,9 +64,11 @@ int main(void) {
 
 //	if (midaFitxer("cfg.txt")) carregarConfig(&dades);
 //	else crearConfig(&dades);
-
+	dades.files = 20;
+	dades.columnes = 20;
+	omplirTaulell(&dades);
 	crearConfig(&dades);
-
+	imprimirTaulell(dades);
 	//mostrarConfig(dades);
 
 //	omplirTaulell(&dades);
@@ -254,6 +257,8 @@ void crearConfig(joc *dades) {
 
 	} while(!comprovaEmbarcacio(*dades, cordenades, 4, alineacio));
 
+	marcarTaulell(dades, cordenades, 4);
+
 	printf("%c %d\n", getFila(cordenades[0]), getColumna(cordenades[0]));
 
 
@@ -294,6 +299,19 @@ boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida, int aline
 	}
 
 	return correcte;
+
+}
+
+
+void marcarTaulell(joc *dades, char cordenades[4][4], int mida) {
+
+	int i;
+
+	for (i = 0; i < mida; i++) {
+
+		dades->taulell[getFila(cordenades[i])-'A'][getColumna(cordenades[i])] = 'P';
+
+	}
 
 }
 
