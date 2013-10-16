@@ -50,7 +50,7 @@ void crearConfig(joc *dades);
 void omplirTaulell(joc *dades);
 void imprimirTaulell(joc dades);
 void marcarTaulell(joc *dades, char cordenades[4][4], int mida);
-boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida, int alineacio);
+boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineacio);
 int digitsNumero(int numero);
 int midaFitxer(char *f);
 int opcioMeu();
@@ -64,9 +64,7 @@ int main(void) {
 
 //	if (midaFitxer("cfg.txt")) carregarConfig(&dades);
 //	else crearConfig(&dades);
-	dades.files = 20;
-	dades.columnes = 20;
-	omplirTaulell(&dades);
+
 	crearConfig(&dades);
 	imprimirTaulell(dades);
 	//mostrarConfig(dades);
@@ -229,7 +227,7 @@ void carregarConfig(joc *dades) {
 
 void crearConfig(joc *dades) {
 
-	char cordenades[4][4];
+	char cordenada[3];
 	int alineacio;
 
 	printf("\nCreació del fitxer de configuració");
@@ -245,46 +243,57 @@ void crearConfig(joc *dades) {
 		scanf("%d", &dades->columnes);
 	} while(dades->columnes < 0 || dades->columnes > MAX);
 
+	printf("\n\nInicialitzant el taulell...");
+	omplirTaulell(dades);
+
 	printf("\n\nCreació de les embarcacions!\n");
 
 	do {
 
 		printf("\nPortavions");
-		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal)");
+		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal Esquerra-Dreta | 3 - Diagonal Dreta-Esquerra)");
 		scanf("%d", &alineacio);
-		printf("\nEntra les 4 cordenades separades per un espai: ");
-		scanf("%s %s %s %s", cordenades[0], cordenades[1], cordenades[2], cordenades[3]);
+		printf("\nEntra la cordenada icinal: ");
+		scanf("%s", cordenada);
 
-	} while(!comprovaEmbarcacio(*dades, cordenades, 4, alineacio));
-
-	marcarTaulell(dades, cordenades, 4);
-
-	printf("%c %d\n", getFila(cordenades[0]), getColumna(cordenades[0]));
+	} while(!comprovaEmbarcacio(dades, cordenada, 4, alineacio));
 
 
 }
 
-boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida, int alineacio) {
+boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineacio) {
 
-	int i, c;
-	char f;
+	int i;
+	char cordenades[mida][4];
+	char *aux;
 	boolean correcte = TRUE;
 
-	//Alineació | -1 - Error | 0 - Horizontal | 1 - Vertical | 2 - Diagonal
+	//Alineació | -1 - Error | 0 - Horizontal | 1 - Vertical | 2 - Diagonal A | 3 - Diagonal B
 
-	f = getFila(cordenades[0]);
-	c = getColumna(cordenades[0]);
+	strncpy(cordenades[0], cordenada, 3);
+	cordenades[0][4]='\0';
 	for (i = 1; i < mida; i++) {
 
 		switch (alineacio) {
 			case 0:
-				if ((getFila(cordenades[i]) != f || getColumna(cordenades[i]) != c + i) && (getFila(cordenades[i]) != f || getColumna(cordenades[i]) != c - i)) correcte = FALSE;
+				aux = getFila(cordenada) + "" + (getColumna(cordenada) + i);
+				strncpy(cordenades[i], aux, 3);
+				cordenades[0][4]='\0';
 			break;
 			case 1:
-				if ((getFila(cordenades[i]) != f + i || getColumna(cordenades[i]) != c) && (getFila(cordenades[i]) != f - i || getColumna(cordenades[i]) != c)) correcte = FALSE;
+				aux = (getFila(cordenada) + i) + "" + getColumna(cordenada);
+				strncpy(cordenades[i], aux, 3);
+				cordenades[0][4]='\0';
 			break;
 			case 2:
-				correcte = FALSE;
+				aux = (getFila(cordenada) + i) + "" + (getColumna(cordenada) + i);
+				strncpy(cordenades[i], aux, 3);
+				cordenades[0][4]='\0';
+			break;
+			case 3:
+				aux = (getFila(cordenada) - i) + "" + (getColumna(cordenada) - i);
+				strncpy(cordenades[i], aux, 3);
+				cordenades[0][4]='\0';
 			break;
 		}
 
@@ -293,11 +302,12 @@ boolean comprovaEmbarcacio(joc dades, char cordenades[4][4], int mida, int aline
 	for (i = 0; i < mida; i++) {
 
 		if (!posicioValida(cordenades[i])) correcte = FALSE;
-		if (getFila(cordenades[i]) > 'A' + dades.files) correcte = FALSE;
-		else if (getColumna(cordenades[i]) > dades.columnes) correcte = FALSE;
+		if (getFila(cordenades[i]) > 'A' + dades->files) correcte = FALSE;
+		else if (getColumna(cordenades[i]) > dades->columnes) correcte = FALSE;
 
 	}
 
+	if (correcte) marcarTaulell(dades, cordenades, mida);
 	return correcte;
 
 }
