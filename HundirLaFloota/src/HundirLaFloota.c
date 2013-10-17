@@ -99,11 +99,16 @@ void omplirTaulell(joc *dades) {
 void imprimirTaulell(joc dades) {
 
 	int i, j;
-	printf("\n\n\n");
+	printf("\n\n\n\t   ");
+	for (i = 0; i < dades.columnes; i++) {
+		if (i < 10) printf(" %d ", i + 1);
+		else printf("%d ", i + 1);
+	}
+	printf("\n");
 	for (i = 0; i < dades.files; i++) {
-		printf("\t");
+		printf("\t %c ", i + 'A');
 		for (j = 0; j < dades.columnes; j++) {
-			printf("%c ", dades.taulell[i][j]);
+			printf(" %c ", dades.taulell[i][j]);
 		}
 		printf("\n");
 	}
@@ -276,24 +281,23 @@ boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineaci
 
 		switch (alineacio) {
 			case 0:
-				aux = getFila(cordenada) + "" + (getColumna(cordenada) + i);
-				strncpy(cordenades[i], aux, 3);
-				cordenades[0][4]='\0';
+				snprintf(cordenades[i], sizeof(cordenades[i]), "%c%d", getFila(cordenada), (getColumna(cordenada) + i));
+				cordenades[i][4]='\0';
 			break;
 			case 1:
 				aux = (getFila(cordenada) + i) + "" + getColumna(cordenada);
 				strncpy(cordenades[i], aux, 3);
-				cordenades[0][4]='\0';
+				cordenades[i][4]='\0';
 			break;
 			case 2:
 				aux = (getFila(cordenada) + i) + "" + (getColumna(cordenada) + i);
 				strncpy(cordenades[i], aux, 3);
-				cordenades[0][4]='\0';
+				cordenades[i][4]='\0';
 			break;
 			case 3:
 				aux = (getFila(cordenada) - i) + "" + (getColumna(cordenada) - i);
 				strncpy(cordenades[i], aux, 3);
-				cordenades[0][4]='\0';
+				cordenades[i][4]='\0';
 			break;
 		}
 
@@ -301,9 +305,13 @@ boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineaci
 
 	for (i = 0; i < mida; i++) {
 
+		printf("\n\n %s", cordenades[i]);
 		if (!posicioValida(cordenades[i])) correcte = FALSE;
+		printf("\nPosició Valida -> %d", correcte);
 		if (getFila(cordenades[i]) > 'A' + dades->files) correcte = FALSE;
-		else if (getColumna(cordenades[i]) > dades->columnes) correcte = FALSE;
+		printf("\nFila -> %d", correcte);
+		if (getColumna(cordenades[i]) > dades->columnes) correcte = FALSE;
+		printf("\nColumna -> %d", correcte);
 
 	}
 
@@ -319,7 +327,7 @@ void marcarTaulell(joc *dades, char cordenades[4][4], int mida) {
 
 	for (i = 0; i < mida; i++) {
 
-		dades->taulell[getFila(cordenades[i])-'A'][getColumna(cordenades[i])] = 'P';
+		dades->taulell[getFila(cordenades[i])-'A'][getColumna(cordenades[i]) - 1] = 'P';
 
 	}
 
