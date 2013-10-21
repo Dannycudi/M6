@@ -263,6 +263,78 @@ void crearConfig(joc *dades) {
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 4, alineacio));
 
+	do {
+
+		printf("\nDestructor A");
+		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal Esquerra-Dreta | 3 - Diagonal Dreta-Esquerra)");
+		scanf("%d", &alineacio);
+		printf("\nEntra la cordenada icinal: ");
+		scanf("%s", cordenada);
+
+	} while(!comprovaEmbarcacio(dades, cordenada, 3, alineacio));
+
+	do {
+
+		printf("\nDestructor B");
+		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal Esquerra-Dreta | 3 - Diagonal Dreta-Esquerra)");
+		scanf("%d", &alineacio);
+		printf("\nEntra la cordenada icinal: ");
+		scanf("%s", cordenada);
+
+	} while(!comprovaEmbarcacio(dades, cordenada, 3, alineacio));
+
+	do {
+
+		printf("\nFragata A");
+		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal Esquerra-Dreta | 3 - Diagonal Dreta-Esquerra)");
+		scanf("%d", &alineacio);
+		printf("\nEntra la cordenada icinal: ");
+		scanf("%s", cordenada);
+
+	} while(!comprovaEmbarcacio(dades, cordenada, 2, alineacio));
+
+	do {
+
+		printf("\nFragata B");
+		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal Esquerra-Dreta | 3 - Diagonal Dreta-Esquerra)");
+		scanf("%d", &alineacio);
+		printf("\nEntra la cordenada icinal: ");
+		scanf("%s", cordenada);
+
+	} while(!comprovaEmbarcacio(dades, cordenada, 2, alineacio));
+
+	do {
+
+		printf("\nSubmari A");
+		printf("\nEntra la cordenada icinal: ");
+		scanf("%s", cordenada);
+
+	} while(!comprovaEmbarcacio(dades, cordenada, 1, 0));
+
+	do {
+
+		printf("\nSubmari B");
+		printf("\nEntra la cordenada icinal: ");
+		scanf("%s", cordenada);
+
+	} while(!comprovaEmbarcacio(dades, cordenada, 1, 0));
+
+	do {
+
+		printf("\nSubmari C");
+		printf("\nEntra la cordenada icinal: ");
+		scanf("%s", cordenada);
+
+	} while(!comprovaEmbarcacio(dades, cordenada, 1, 0));
+
+	do {
+
+		printf("\nSubmari D");
+		printf("\nEntra la cordenada icinal: ");
+		scanf("%s", cordenada);
+
+	} while(!comprovaEmbarcacio(dades, cordenada, 1, 0));
+
 
 }
 
@@ -270,12 +342,11 @@ boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineaci
 
 	int i;
 	char cordenades[mida][4];
-	char *aux;
 	boolean correcte = TRUE;
 
 	//Alineació | -1 - Error | 0 - Horizontal | 1 - Vertical | 2 - Diagonal A | 3 - Diagonal B
 
-	strncpy(cordenades[0], cordenada, 3);
+	strncpy(cordenades[0], cordenada, 4);
 	cordenades[0][4]='\0';
 	for (i = 1; i < mida; i++) {
 
@@ -285,18 +356,15 @@ boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineaci
 				cordenades[i][4]='\0';
 			break;
 			case 1:
-				aux = (getFila(cordenada) + i) + "" + getColumna(cordenada);
-				strncpy(cordenades[i], aux, 3);
+				snprintf(cordenades[i], sizeof(cordenades[i]), "%c%d", (getFila(cordenada) + i), getColumna(cordenada));
 				cordenades[i][4]='\0';
 			break;
 			case 2:
-				aux = (getFila(cordenada) + i) + "" + (getColumna(cordenada) + i);
-				strncpy(cordenades[i], aux, 3);
+				snprintf(cordenades[i], sizeof(cordenades[i]), "%c%d", (getFila(cordenada) + i), (getColumna(cordenada) + i));
 				cordenades[i][4]='\0';
 			break;
 			case 3:
-				aux = (getFila(cordenada) - i) + "" + (getColumna(cordenada) - i);
-				strncpy(cordenades[i], aux, 3);
+				snprintf(cordenades[i], sizeof(cordenades[i]), "%c%d", (getFila(cordenada) + i), (getColumna(cordenada) - i));
 				cordenades[i][4]='\0';
 			break;
 		}
@@ -310,12 +378,18 @@ boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineaci
 		printf("\nPosició Valida -> %d", correcte);
 		if (getFila(cordenades[i]) > 'A' + dades->files) correcte = FALSE;
 		printf("\nFila -> %d", correcte);
-		if (getColumna(cordenades[i]) > dades->columnes) correcte = FALSE;
+		if (getColumna(cordenades[i])  > dades->columnes) correcte = FALSE;
 		printf("\nColumna -> %d", correcte);
+		if (dades->taulell[getFila(cordenades[i]) - 'A'][getColumna(cordenades[i])] != '-') correcte = FALSE;
+		printf("\nTaulell -> %d", correcte);
 
 	}
 
-	if (correcte) marcarTaulell(dades, cordenades, mida);
+	if (correcte) {
+		marcarTaulell(dades, cordenades, mida);
+		imprimirTaulell(*dades);
+	}
+
 	return correcte;
 
 }
@@ -324,10 +398,27 @@ boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineaci
 void marcarTaulell(joc *dades, char cordenades[4][4], int mida) {
 
 	int i;
+	char lletra;
+
+	switch(mida) {
+	case 1:
+		lletra = 'S';
+		break;
+	case 2:
+		lletra = 'F';
+		break;
+	case 3:
+		lletra = 'D';
+		break;
+	case 4:
+		lletra = 'P';
+		break;
+	}
+
 
 	for (i = 0; i < mida; i++) {
 
-		dades->taulell[getFila(cordenades[i])-'A'][getColumna(cordenades[i]) - 1] = 'P';
+		dades->taulell[getFila(cordenades[i])-'A'][getColumna(cordenades[i]) - 1] = lletra;
 
 	}
 
