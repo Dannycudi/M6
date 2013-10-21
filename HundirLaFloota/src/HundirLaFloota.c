@@ -177,6 +177,13 @@ void guardarConfig(joc dades) {
 	}
 	fprintf(cfg, "\n");
 
+	fprintf(cfg, "fragata1 ");
+	for (i = 0; i < 3; i++) {
+		fprintf(cfg, "%c%d", dades.fragataA[i].fila, dades.fragataA[i].columna);
+		if (i != 1) fprintf(cfg, ",");
+	}
+	fprintf(cfg, "\n");
+
 	fclose(cfg);
 
 }
