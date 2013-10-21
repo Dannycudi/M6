@@ -47,6 +47,7 @@ typedef struct Joc joc;
 void mostrarConfig(joc dades);
 void carregarConfig(joc *dades);
 void crearConfig(joc *dades);
+void guardarConfig(joc dades);
 void omplirTaulell(joc *dades);
 void imprimirTaulell(joc dades);
 void marcarTaulell(joc *dades, char cordenades[4][4], int mida);
@@ -147,6 +148,39 @@ void mostrarConfig(joc dades) {
 
 }
 
+void guardarConfig(joc dades) {
+
+	FILE *cfg;
+	int i;
+
+	cfg = fopen("cfg.txt", "w");
+	fprintf(cfg, "taulell %dx%d\n", dades.files, dades.columnes);
+
+	fprintf(cfg, "portavions ");
+	for (i = 0; i < 4; i++) {
+		fprintf(cfg, "%c%d", dades.portavions[i].fila, dades.portavions[i].columna);
+		if (i != 3) fprintf(cfg, ",");
+	}
+	fprintf(cfg, "\n");
+
+	fprintf(cfg, "destructor1 ");
+	for (i = 0; i < 3; i++) {
+		fprintf(cfg, "%c%d", dades.destructorA[i].fila, dades.destructorA[i].columna);
+		if (i != 2) fprintf(cfg, ",");
+	}
+	fprintf(cfg, "\n");
+
+	fprintf(cfg, "destructor2 ");
+	for (i = 0; i < 3; i++) {
+		fprintf(cfg, "%c%d", dades.destructorB[i].fila, dades.destructorB[i].columna);
+		if (i != 2) fprintf(cfg, ",");
+	}
+	fprintf(cfg, "\n");
+
+	fclose(cfg);
+
+}
+
 void carregarConfig(joc *dades) {
 
 	FILE *cfg;
@@ -157,8 +191,8 @@ void carregarConfig(joc *dades) {
 
 	//Taulell - fread(cadena, sizeof(char), 14, cfg);
 	fgets(cadena, 81, cfg);
-	dades->columnes = atoi(&cadena[11]);
 	dades->files = atoi(&cadena[7]);
+	dades->columnes = atoi(&cadena[11]);
 
 	//Portavions - fread(cadena, sizeof(char), 27, cfg);
 	fgets(cadena, 81, cfg);
