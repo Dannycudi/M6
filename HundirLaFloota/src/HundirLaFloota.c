@@ -48,6 +48,7 @@ void mostrarConfig(joc dades);
 void carregarConfig(joc *dades);
 void crearConfig(joc *dades);
 void guardarConfig(joc dades);
+void eliminarConfig(joc *dades);
 void omplirTaulell(joc *dades);
 void imprimirTaulell(joc dades);
 void marcarTaulell(joc *dades, char cordenades[4][4], int mida);
@@ -220,6 +221,18 @@ void guardarConfig(joc dades) {
 	fprintf(cfg, "\n");
 
 	fclose(cfg);
+
+}
+
+void eliminarConfig(joc *dades) {
+
+	char op;
+
+	printf("\n\tLa configuración actual está a punto de eliminarse. ¿Estás seguro? (s\n) ");
+	printf("\n\t\tEliminar? ");
+	scanf("%c", op);
+
+	if (op == 's' || op == 'S') unlink("cfg.txt");
 
 }
 
