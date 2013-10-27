@@ -99,10 +99,16 @@ int main(void) {
 			printf("\n\n\tFitxer de configuració creat amb éxit. cfg.txt!\n");
 			break;
 		case 3:
-			modificarConfig(&dades);
+			if (midaFitxer("cfg.txt") && (dades.columnes != -1 && dades.files != -1)) {
+				modificarConfig(&dades);
+			}
+			else printf("\n\n\t\tNo es troba una configuració a modificar.\n\t\tIntenta llegir o crear-la abans.\n\n");
 			break;
 		case 4:
-			eliminarConfig(&dades);
+			if (midaFitxer("cfg.txt") && (dades.columnes != -1 && dades.files != -1)) {
+				eliminarConfig(&dades);
+			}
+			else printf("\n\n\t\tNo es troba una configuració a eliminar.\n\t\tIntenta llegir o crear-la abans.\n\n");
 			break;
 		case 5:
 			if (midaFitxer("cfg.txt") && (dades.columnes != -1 && dades.files != -1)) {
@@ -231,7 +237,7 @@ void guardarConfig(joc dades) {
 	fprintf(cfg, "submari ");
 	for (i = 0; i < 4; i++) {
 		fprintf(cfg, "%c%d", dades.submarins[i][0].fila, dades.submarins[i][0].columna);
-		if (i != 4) fprintf(cfg, ",");
+		if (i != 3) fprintf(cfg, ",");
 	}
 	fprintf(cfg, "\n");
 
@@ -478,6 +484,7 @@ void crearConfig(joc *dades) {
 void modificarConfig(joc *dades) {
 
 	int op, aux, auxAnterior;
+	char cordenada[4];
 
 	printf("\n\n\n");
 
@@ -515,8 +522,6 @@ void modificarConfig(joc *dades) {
 			auxAnterior = dades->columnes;
 			dades->columnes = aux;
 
-			printf("%d", dades->columnes);
-
 			if (marcaNoModificats(dades, op) == TRUE) printf("\n\t\tColumnes modificades amb éxit!\n");
 			else {
 				dades->columnes = auxAnterior;
@@ -524,7 +529,127 @@ void modificarConfig(joc *dades) {
 			}
 
 			break;
+		case 3:
+
+			printf("\nPortavions");
+			printf("\nEntra la cordenada icinal: ");
+			scanf("%s", cordenada);
+			printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
+			scanf("%d", &aux);
+
+			if (marcaNoModificats(dades, op) == TRUE) {
+				if (comprovaEmbarcacio(dades, cordenada, 4, aux, 0)) printf("\n\t\tPortavions modificat amb éxit!\n");
+				else printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+		case 4:
+
+			printf("\nDestructorA");
+			printf("\nEntra la cordenada icinal: ");
+			scanf("%s", cordenada);
+			printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
+			scanf("%d", &aux);
+
+			if (marcaNoModificats(dades, op) == TRUE) {
+				if (comprovaEmbarcacio(dades, cordenada, 3, aux, 1)) printf("\n\t\tDestructorA modificat amb éxit!\n");
+				else printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+		case 5:
+
+			printf("\nDestructorB");
+			printf("\nEntra la cordenada icinal: ");
+			scanf("%s", cordenada);
+			printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
+			scanf("%d", &aux);
+
+			if (marcaNoModificats(dades, op) == TRUE) {
+				if (comprovaEmbarcacio(dades, cordenada, 3, aux, 2)) printf("\n\t\tDestructorB modificat amb éxit!\n");
+				else printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+		case 6:
+
+			printf("\nFragataA");
+			printf("\nEntra la cordenada icinal: ");
+			scanf("%s", cordenada);
+			printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
+			scanf("%d", &aux);
+
+			if (marcaNoModificats(dades, op) == TRUE) {
+				if (comprovaEmbarcacio(dades, cordenada, 2, aux, 3)) printf("\n\t\tFragataA modificat amb éxit!\n");
+				else printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+		case 7:
+
+			printf("\nFragataB");
+			printf("\nEntra la cordenada icinal: ");
+			scanf("%s", cordenada);
+			printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
+			scanf("%d", &aux);
+
+			if (marcaNoModificats(dades, op) == TRUE) {
+				if (comprovaEmbarcacio(dades, cordenada, 2, aux, 4)) printf("\n\t\tFragataB modificat amb éxit!\n");
+				else printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+		case 8:
+
+			printf("\nSubmariA");
+			printf("\nEntra la cordenada: ");
+			scanf("%s", cordenada);
+
+			if (marcaNoModificats(dades, op) == TRUE) {
+				if (comprovaEmbarcacio(dades, cordenada, 1, aux, 5)) printf("\n\t\tSubmariA modificat amb éxit!\n");
+				else printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+		case 9:
+
+			printf("\nSubmariB");
+			printf("\nEntra la cordenada: ");
+			scanf("%s", cordenada);
+
+			if (marcaNoModificats(dades, op) == TRUE) {
+				if (comprovaEmbarcacio(dades, cordenada, 1, aux, 6)) printf("\n\t\tSubmariB modificat amb éxit!\n");
+				else printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+		case 10:
+
+			printf("\nSubmariC");
+			printf("\nEntra la cordenada: ");
+			scanf("%s", cordenada);
+
+			if (marcaNoModificats(dades, op) == TRUE) {
+				if (comprovaEmbarcacio(dades, cordenada, 1, aux, 7)) printf("\n\t\tSubmariC modificat amb éxit!\n");
+				else printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+		case 11:
+
+			printf("\nSubmariD");
+			printf("\nEntra la cordenada: ");
+			scanf("%s", cordenada);
+
+			if (marcaNoModificats(dades, op) == TRUE) {
+				if (comprovaEmbarcacio(dades, cordenada, 1, aux, 8)) printf("\n\t\tSubmariD	 modificat amb éxit!\n");
+				else printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
 	}
+
+	guardarConfig(*dades);
 
 }
 
