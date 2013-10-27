@@ -264,6 +264,18 @@ void eliminarConfig(joc *dades) {
 
 }
 
+void eliminarConfig(joc *dades) {
+
+	char op;
+
+	printf("\n\tLa configuración actual está a punto de eliminarse. ¿Estás seguro? (s\n) ");
+	printf("\n\t\tEliminar? ");
+	scanf("%c", op);
+
+	if (op == 's' || op == 'S') unlink("cfg.txt");
+
+}
+
 void carregarConfig(joc *dades) {
 
 	FILE *cfg;
