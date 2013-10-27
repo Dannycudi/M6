@@ -47,16 +47,19 @@ typedef struct Joc joc;
 void mostrarConfig(joc dades);
 void carregarConfig(joc *dades);
 void crearConfig(joc *dades);
+void modificarConfig(joc *dades);
 void guardarConfig(joc dades);
 void eliminarConfig(joc *dades);
 void omplirTaulell(joc *dades);
 void imprimirTaulell(joc dades);
+boolean marcaNoModificats(joc *dades, int op);
 void marcarTaulell(joc *dades, char cordenades[4][4], int mida);
 void marcarStruct(joc *dades, char cordenades[4][4], int mida, int embarcacio);
 boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineacio, int embarcacio);
 int digitsNumero(int numero);
 int midaFitxer(char *f);
 int opcioMenu();
+int getAlineacio(char cordenades[4][4], int mida);
 char getFila(char cad[10]);
 int getColumna(char cad[10]);
 boolean posicioValida(char cad[10]);
@@ -75,27 +78,37 @@ int main(void) {
 
 	int op;
 	joc dades;
+	dades.files = -1;
+	dades.columnes = -1;
 
 	do {
 		op = opcioMenu();
-		printf("\n\n");
 
 		switch(op) {
 
 		case 1:
 			if (midaFitxer("cfg.txt")) {
 				carregarConfig(&dades);
-				printf("\t\tFitxer de configuració carregat amb éxit!\n\n");
 				imprimirTaulell(dades);
+				printf("\n\n\tFitxer de configuració carregat amb éxit!\n\n");
 			}
 			else printf("\t\tNo s'ha pogut carregar el fitxer de configuració 'cfg.txt'.");
 			break;
 		case 2:
 			crearConfig(&dades);
-			printf("\t\tFitxer de configuració creat amb éxit. cfg.txt!");
+			printf("\n\n\tFitxer de configuració creat amb éxit. cfg.txt!\n");
+			break;
+		case 3:
+			modificarConfig(&dades);
+			break;
+		case 4:
+			eliminarConfig(&dades);
 			break;
 		case 5:
-			mostrarConfig(dades);
+			if (midaFitxer("cfg.txt") && (dades.columnes != -1 && dades.files != -1)) {
+				mostrarConfig(dades);
+			}
+			else printf("\n\n\t\tNo es troba una configuració a mostrar.\n\t\tIntenta llegir o crear-la abans.\n\n");
 			break;
 		}
 
@@ -168,6 +181,8 @@ void mostrarConfig(joc dades) {
 		printf("\t\tFila - %c \t Columna - %d\n", dades.submarins[i][0].fila, dades.submarins[i][0].columna);
 	}
 
+	imprimirTaulell(dades);
+
 }
 
 void guardarConfig(joc dades) {
@@ -214,9 +229,9 @@ void guardarConfig(joc dades) {
 	fprintf(cfg, "\n");
 
 	fprintf(cfg, "submari ");
-	for (i = 0; i < 2; i++) {
+	for (i = 0; i < 4; i++) {
 		fprintf(cfg, "%c%d", dades.submarins[i][0].fila, dades.submarins[i][0].columna);
-		if (i != 1) fprintf(cfg, ",");
+		if (i != 4) fprintf(cfg, ",");
 	}
 	fprintf(cfg, "\n");
 
@@ -228,11 +243,18 @@ void eliminarConfig(joc *dades) {
 
 	char op;
 
-	printf("\n\tLa configuración actual está a punto de eliminarse. ¿Estás seguro? (s\n) ");
-	printf("\n\t\tEliminar? ");
-	scanf("%c", op);
+	printf("\n\tLa configuración actual está a punto de eliminarse. ");
+	do {
+		printf("\n\n\t\t¿Estás seguro? (s/n): ");
+		getchar();
+		scanf("%c", &op);
+	}
+	while(op != 's' && op != 'n' && op != 'S' && op != 'N');
 
-	if (op == 's' || op == 'S') unlink("cfg.txt");
+	if (op == 's' || op == 'S') {
+		remove("cfg.txt");
+		printf("\n\t\tFitxer 'cfg.txt' de configuració eliminat amb éxit!\n");
+	}
 
 }
 
@@ -366,6 +388,7 @@ void crearConfig(joc *dades) {
 		scanf("%d", &alineacio);
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 4, alineacio, 0));
+	imprimirTaulell(*dades);
 
 	do {
 
@@ -376,6 +399,7 @@ void crearConfig(joc *dades) {
 		scanf("%d", &alineacio);
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 3, alineacio, 1));
+	imprimirTaulell(*dades);
 
 	do {
 
@@ -386,6 +410,7 @@ void crearConfig(joc *dades) {
 		scanf("%d", &alineacio);
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 3, alineacio, 2));
+	imprimirTaulell(*dades);
 
 	do {
 
@@ -396,6 +421,7 @@ void crearConfig(joc *dades) {
 		scanf("%d", &alineacio);
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 2, alineacio, 3));
+	imprimirTaulell(*dades);
 
 	do {
 
@@ -406,6 +432,7 @@ void crearConfig(joc *dades) {
 		scanf("%d", &alineacio);
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 2, alineacio, 4));
+	imprimirTaulell(*dades);
 
 	do {
 
@@ -414,6 +441,7 @@ void crearConfig(joc *dades) {
 		scanf("%s", cordenada);
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 1, 0, 5));
+	imprimirTaulell(*dades);
 
 	do {
 
@@ -422,6 +450,7 @@ void crearConfig(joc *dades) {
 		scanf("%s", cordenada);
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 1, 0, 6));
+	imprimirTaulell(*dades);
 
 	do {
 
@@ -430,6 +459,7 @@ void crearConfig(joc *dades) {
 		scanf("%s", cordenada);
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 1, 0, 7));
+	imprimirTaulell(*dades);
 
 	do {
 
@@ -438,11 +468,116 @@ void crearConfig(joc *dades) {
 		scanf("%s", cordenada);
 
 	} while(!comprovaEmbarcacio(dades, cordenada, 1, 0, 8));
+	imprimirTaulell(*dades);
 
 
 	guardarConfig(*dades);
 
 }
+
+void modificarConfig(joc *dades) {
+
+	int op, aux, auxAnterior;
+
+	printf("\n\n\n");
+
+	do {
+		printf("MODIFICAR CONFIGURACIÓ\n\n\tQuè vols modificar?\n");
+		printf("\n\t\t1) Files del taulell\n\t\t2) Columnes del taulell\n\t\t3) Portavions\n\t\t4) DestructorA\n\t\t5) DestructorB\n\t\t6) FragataA\n\t\t7) FragataB");
+		printf("\n\t\t8) Submari A\n\t\t9) Submari B\n\t\t10) Submari C\n\t\t11) Submari D");
+		printf("\n\n\t\t\tOpció: ");
+		scanf("%d", &op);
+	} while(op < 1 || op > 11);
+
+
+	switch (op) {
+		case 1:
+
+			printf("\n\n\tEntra les files del taulell: ");
+			scanf("%d", &aux);
+
+			auxAnterior = dades->files;
+
+			dades->files = aux;
+
+			if (marcaNoModificats(dades, op) == TRUE) printf("\n\t\tFiles modificades amb éxit!\n");
+			else {
+				dades->files = auxAnterior;
+				printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+		case 2:
+
+			printf("\n\n\tEntra les columnes del taulell: ");
+			scanf("%d", &aux);
+
+			auxAnterior = dades->columnes;
+			dades->columnes = aux;
+
+			printf("%d", dades->columnes);
+
+			if (marcaNoModificats(dades, op) == TRUE) printf("\n\t\tColumnes modificades amb éxit!\n");
+			else {
+				dades->columnes = auxAnterior;
+				printf("\n\t\tError al fer la modificació!\n");
+			}
+
+			break;
+	}
+
+}
+
+boolean marcaNoModificats(joc *dades, int op) {
+
+	int i;
+	char cordenades[4][4];
+	boolean correcte = TRUE;
+
+	omplirTaulell(dades);
+
+
+	if (op != 3 && correcte) {
+		for (i = 0; i < 4; i++) snprintf(cordenades[i], sizeof(cordenades[i]), "%c%d", dades->portavions[i].fila, dades->portavions[i].columna);
+		correcte = comprovaEmbarcacio(dades, cordenades[0], 4, getAlineacio(cordenades, 4), 0);
+	}
+	if (op != 4 && correcte) {
+		for (i = 0; i < 3; i++) sprintf(cordenades[i], "%c%d", dades->destructorA[i].fila, dades->destructorA[i].columna);
+		correcte = comprovaEmbarcacio(dades, cordenades[0], 3, getAlineacio(cordenades, 3), 1);
+	}
+	if (op != 5 && correcte) {
+		for (i = 0; i < 3; i++) sprintf(cordenades[i], "%c%d", dades->destructorB[i].fila, dades->destructorB[i].columna);
+		correcte = comprovaEmbarcacio(dades, cordenades[0], 3, getAlineacio(cordenades, 3), 2);
+	}
+	if (op != 6 && correcte) {
+		for (i = 0; i < 2; i++) sprintf(cordenades[i], "%c%d", dades->fragataA[i].fila, dades->fragataA[i].columna);
+		correcte = comprovaEmbarcacio(dades, cordenades[0], 2, getAlineacio(cordenades, 2), 3);
+	}
+	if (op != 7 && correcte) {
+		for (i = 0; i < 2; i++) sprintf(cordenades[i], "%c%d", dades->fragataB[i].fila, dades->fragataB[i].columna);
+		correcte = comprovaEmbarcacio(dades, cordenades[0], 2, getAlineacio(cordenades, 2), 4);
+	}
+	if (op != 8 && correcte) {
+		sprintf(cordenades[0], "%c%d", dades->submarins[0][0].fila, dades->submarins[0][0].columna);
+		correcte = comprovaEmbarcacio(dades, cordenades[0], 1, getAlineacio(cordenades, 1), 5);
+	}
+	if (op != 9 && correcte) {
+		sprintf(cordenades[0], "%c%d", dades->submarins[1][0].fila, dades->submarins[1][0].columna);
+		correcte = comprovaEmbarcacio(dades, cordenades[0], 1, getAlineacio(cordenades, 1), 6);
+	}
+	if (op != 10 && correcte) {
+		sprintf(cordenades[0], "%c%d", dades->submarins[2][0].fila, dades->submarins[2][0].columna);
+		correcte = comprovaEmbarcacio(dades, cordenades[0], 1, getAlineacio(cordenades, 1), 7);
+	}
+	if (op != 11 && correcte) {
+		sprintf(cordenades[0], "%c%d", dades->submarins[3][0].fila, dades->submarins[3][0].columna);
+		correcte = comprovaEmbarcacio(dades, cordenades[0], 1, getAlineacio(cordenades, 1), 8);
+	}
+
+	return correcte;
+
+}
+
 
 boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineacio, int embarcacio) {
 
@@ -479,22 +614,16 @@ boolean comprovaEmbarcacio(joc *dades, char cordenada[4], int mida, int alineaci
 
 	for (i = 0; i < mida; i++) {
 
-		//printf("\n\n%s", cordenades[i]);
 		if (!posicioValida(cordenades[i])) correcte = FALSE;
-		//printf("\nPosició Valida -> %d", correcte);
 		if (getFila(cordenades[i]) > 'A' + dades->files) correcte = FALSE;
-		//printf("\nFila -> %d", correcte);
 		if (getColumna(cordenades[i])  > dades->columnes) correcte = FALSE;
-		//printf("\nColumna -> %d", correcte);
 		if (dades->taulell[getFila(cordenades[i]) - 'A'][getColumna(cordenades[i])] != '-') correcte = FALSE;
-		//printf("\nTaulell -> %d", correcte);
 
 	}
 
 	if (correcte) {
 		marcarTaulell(dades, cordenades, mida);
 		marcarStruct(dades, cordenades, mida, embarcacio);
-		imprimirTaulell(*dades);
 	}
 
 	return correcte;
@@ -592,6 +721,19 @@ boolean posicioValida(char cad[10]) {
 
 }
 
+int getAlineacio(char cordenades[4][4], int mida) {
+
+	int al = -1;
+
+	if (getFila(cordenades[0]) == getFila(cordenades[1]) && getColumna(cordenades[1]) == (getColumna(cordenades[0]) + 1)) al = 0;
+	else if (getFila(cordenades[1]) == (getFila(cordenades[0]) + 1) && getColumna(cordenades[0]) == getColumna(cordenades[1])) al = 1;
+	else if (getFila(cordenades[1]) == (getFila(cordenades[0]) + 1) && getColumna(cordenades[1]) == (getColumna(cordenades[0]) + 1)) al = 2;
+	else if (getFila(cordenades[1]) == (getFila(cordenades[0]) + 1) && getColumna(cordenades[1]) == (getColumna(cordenades[0]) - 1)) al = 3;
+	else if (mida == 1) al = 0;
+
+	return al;
+}
+
 char getFila(char cad[10]) {
 
 	return toupper(cad[0]);
@@ -627,7 +769,7 @@ int digitsNumero(int numero) {
 
 int midaFitxer(char *f) {
 
-	int mida;
+	int mida = 0;
 	FILE *cfg;
 	cfg = fopen(f, "a+");
 	fseek(cfg, 0L, SEEK_END);
