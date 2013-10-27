@@ -498,7 +498,7 @@ void modificarConfig(joc *dades) {
 	int op, aux, auxAnterior;
 	char cordenada[4];
 
-	printf("\n\n\n");
+	printf("\n\n\n ");
 
 	do {
 		printf("MODIFICAR CONFIGURACIÓ\n\n\tQuè vols modificar?\n");
