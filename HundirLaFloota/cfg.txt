@@ -1,7 +1,7 @@
-taulell 20x18
-portavions B3,B4,B5,B6
-destructor1 D3,E4,F5
-destructor2 C9,D10,E11
-fragata1 F1,G1
-fragata2 G7,H7
-submari C18,N6,N8,N10
+taulell 20x19
+portavions B4,B5,B6,B7
+destructor1 D4,E5,F6
+destructor2 B15,C14,D13
+fragata1 F10,G10
+fragata2 L4,M4
+submari J7,O3,Q5,F18
