@@ -40,8 +40,6 @@ struct Joc
 	char taulell[MAX][MAX];
 };
 
-// Mirar si es posible haciendo una estructura para cada tipo de barco
-// y generar una estructura madre que contenga cada una de las diferentes estructuras de barco.
 typedef struct Joc joc;
 
 void mostrarConfig(joc dades);
@@ -63,18 +61,9 @@ int getAlineacio(char cordenades[4][4], int mida);
 char getFila(char cad[10]);
 int getColumna(char cad[10]);
 boolean posicioValida(char cad[10]);
+int primerEspai(char cad[100]);
 
 int main(void) {
-
-//	if (midaFitxer("cfg.txt")) carregarConfig(&dades);
-//	else crearConfig(&dades);
-
-//	crearConfig(&dades);
-//	imprimirTaulell(dades);
-	//mostrarConfig(dades);
-
-//	omplirTaulell(&dades);
-//	imprimirTaulell(dades);
 
 	int op;
 	joc dades;
@@ -264,18 +253,6 @@ void eliminarConfig(joc *dades) {
 
 }
 
-void eliminarConfig(joc *dades) {
-
-	char op;
-
-	printf("\n\tLa configuración actual está a punto de eliminarse. ¿Estás seguro? (s\n) ");
-	printf("\n\t\tEliminar? ");
-	scanf("%c", op);
-
-	if (op == 's' || op == 'S') unlink("cfg.txt");
-
-}
-
 void carregarConfig(joc *dades) {
 
 	FILE *cfg;
@@ -293,7 +270,7 @@ void carregarConfig(joc *dades) {
 
 	//Portavions - fread(cadena, sizeof(char), 27, cfg);
 	fgets(cadena, 81, cfg);
-	cont = 11;
+	cont = primerEspai(cadena) + 1;
 	for (i = 0; i < 4; i++) {
 		letra = toupper(cadena[cont]);
 		numero = atoi(&cadena[cont+1]);
@@ -306,7 +283,7 @@ void carregarConfig(joc *dades) {
 
 	//DestructorA - fread(cadena, sizeof(char), 23, cfg);
 	fgets(cadena, 81, cfg);
-	cont = 12;
+	cont = primerEspai(cadena) + 1;
 	for (i = 0; i < 3; i++) {
 		letra = toupper(cadena[cont]);
 		numero = atoi(&cadena[cont+1]);
@@ -319,7 +296,7 @@ void carregarConfig(joc *dades) {
 
 	//DestructorB - fread(cadena, sizeof(char), 23, cfg);
 	fgets(cadena, 81, cfg);
-	cont = 12;
+	cont = primerEspai(cadena) + 1;
 	for (i = 0; i < 3; i++) {
 		letra = toupper(cadena[cont]);
 		numero = atoi(&cadena[cont+1]);
@@ -332,7 +309,7 @@ void carregarConfig(joc *dades) {
 
 	//FragataA - fread(cadena, sizeof(char), 15, cfg);
 	fgets(cadena, 81, cfg);
-	cont = 9;
+	cont = primerEspai(cadena) + 1;
 	for (i = 0; i < 2; i++) {
 		letra = toupper(cadena[cont]);
 		numero = atoi(&cadena[cont+1]);
@@ -345,7 +322,7 @@ void carregarConfig(joc *dades) {
 
 	//FragataB - fread(cadena, sizeof(char), 15, cfg);
 	fgets(cadena, 81, cfg);
-	cont = 9;
+	cont = primerEspai(cadena) + 1;
 	for (i = 0; i < 2; i++) {
 		letra = toupper(cadena[cont]);
 		numero = atoi(&cadena[cont+1]);
@@ -358,7 +335,7 @@ void carregarConfig(joc *dades) {
 
 	//Submarins - fread(cadena, sizeof(char), 23, cfg);
 	fgets(cadena, 81, cfg);
-	cont = 8;
+	cont = primerEspai(cadena) + 1;
 	for (i = 0; i < 4; i++) {
 		letra = toupper(cadena[cont]);
 		numero = atoi(&cadena[cont+1]);
@@ -929,4 +906,17 @@ int opcioMenu() {
 	while (op < 1 || op > 6);
 
 	return op;
+}
+
+
+int primerEspai(char cad[100]) {
+
+	int i, espai = -1;
+
+	for (i = 0; i < strlen(cad) && espai == -1; i++) {
+		if (cad[i] == ' ') espai = i;
+	}
+
+	return espai;
+
 }
