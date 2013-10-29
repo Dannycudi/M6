@@ -65,13 +65,15 @@ int getColumna(char cad[10]);
 boolean posicioValida(char cad[10]);
 int primerEspai(char cad[100]);
 int getMidaBarco(char lletra);
+void rellenarNombres();
 
-char casillas[MAX][MAX];
+char casillas[MAX][MAX], nombres[9][20];
 
 int main(void) {
 
 	int op;
 	juego datos;
+	rellenarNombres();
 
 
 	return 0;
@@ -220,6 +222,8 @@ void eliminarConfig(juego *datos) {
 
 void carregarConfig(juego *datos) {
 
+	//TODO: Falta pasar la lectura a binario.
+
 	FILE *cfg;
 
 	cfg = fopen("cfg.txt", "r+");
@@ -233,84 +237,21 @@ void carregarConfig(juego *datos) {
 
 	omplirTaulell(datos);
 
-	//Portavions - fread(cadena, sizeof(char), 27, cfg);
-	fgets(cadena, 81, cfg);
-	cont = primerEspai(cadena) + 1;
-	for (i = 0; i < 4; i++) {
-		letra = toupper(cadena[cont]);
-		numero = atoi(&cadena[cont+1]);
-		datos->portavions[i].fila = letra;
-		datos->portavions[i].columna = numero;
-		cont = cont + 2 + digitsNumero(numero);
-		sprintf(cordenades[i], "%c%d", letra, numero);
-	}
-	marcarTaulell(datos, cordenades, 4);
+	int j;
 
-	//DestructorA - fread(cadena, sizeof(char), 23, cfg);
-	fgets(cadena, 81, cfg);
-	cont = primerEspai(cadena) + 1;
-	for (i = 0; i < 3; i++) {
-		letra = toupper(cadena[cont]);
-		numero = atoi(&cadena[cont+1]);
-		datos->destructorA[i].fila = letra;
-		datos->destructorA[i].columna = numero;
-		cont = cont + 2 + digitsNumero(numero);
-		sprintf(cordenades[i], "%c%d", letra, numero);
+	for (i = 0; i < 9; i++) {
+		fgets(cadena, 81, cfg);
+		cont = primerEspai(cadena) + 1;
+		for (j = 0; j < getMidaBarco(datos->flota[i].tipo); j++) {
+			letra = toupper(cadena[cont]);
+			numero = atoi(&cadena[cont+1]);
+			datos->flota[i].casillas[j].fila = letra;
+			datos->flota[i].casillas[j].columna = numero;
+			cont = cont + 2 + digitsNumero(numero);
+			sprintf(cordenades[i], "%c%d", letra, numero);
+		}
+		marcarTaulell(datos, cordenades, getMidaBarco(datos->flota[i].tipo));
 	}
-	marcarTaulell(datos, cordenades, 3);
-
-	//DestructorB - fread(cadena, sizeof(char), 23, cfg);
-	fgets(cadena, 81, cfg);
-	cont = primerEspai(cadena) + 1;
-	for (i = 0; i < 3; i++) {
-		letra = toupper(cadena[cont]);
-		numero = atoi(&cadena[cont+1]);
-		datos->destructorB[i].fila = letra;
-		datos->destructorB[i].columna = numero;
-		cont = cont + 2 + digitsNumero(numero);
-		sprintf(cordenades[i], "%c%d", letra, numero);
-	}
-	marcarTaulell(datos, cordenades, 3);
-
-	//FragataA - fread(cadena, sizeof(char), 15, cfg);
-	fgets(cadena, 81, cfg);
-	cont = primerEspai(cadena) + 1;
-	for (i = 0; i < 2; i++) {
-		letra = toupper(cadena[cont]);
-		numero = atoi(&cadena[cont+1]);
-		datos->fragataA[i].fila = letra;
-		datos->fragataA[i].columna = numero;
-		cont = cont + 2 + digitsNumero(numero);
-		sprintf(cordenades[i], "%c%d", letra, numero);
-	}
-	marcarTaulell(datos, cordenades, 2);
-
-	//FragataB - fread(cadena, sizeof(char), 15, cfg);
-	fgets(cadena, 81, cfg);
-	cont = primerEspai(cadena) + 1;
-	for (i = 0; i < 2; i++) {
-		letra = toupper(cadena[cont]);
-		numero = atoi(&cadena[cont+1]);
-		datos->fragataB[i].fila = letra;
-		datos->fragataB[i].columna = numero;
-		cont = cont + 2 + digitsNumero(numero);
-		sprintf(cordenades[i], "%c%d", letra, numero);
-	}
-	marcarTaulell(datos, cordenades, 2);
-
-	//Submarins - fread(cadena, sizeof(char), 23, cfg);
-	fgets(cadena, 81, cfg);
-	cont = primerEspai(cadena) + 1;
-	for (i = 0; i < 4; i++) {
-		letra = toupper(cadena[cont]);
-		numero = atoi(&cadena[cont+1]);
-		datos->submarins[i][0].fila = letra;
-		datos->submarins[i][0].columna = numero;
-		cont = cont + 2 + digitsNumero(numero);
-		sprintf(cordenades[0], "%c%d", letra, numero);
-		marcarTaulell(datos, cordenades, 1);
-	}
-
 
 	fclose(cfg);
 
@@ -319,117 +260,43 @@ void carregarConfig(juego *datos) {
 void crearConfig(juego *datos) {
 
 	char cordenada[3];
-	int alineacio;
+	int alineacio, i;
 
 	printf("\nCreació del fitxer de configuració");
 
 	printf("\n\nCreació del Taulell\n");
 	do {
 		printf("Entra el numero de filas: ");
-		scanf("%d", &datos->files);
-	} while(datos->files < 0 || datos->files > MAX);
+		scanf("%d", &datos->tablero.filas);
+	} while(datos->tablero.filas < 0 || datos->tablero.filas > MAX);
 
 	do {
 		printf("Entra el numero de columnas: ");
-		scanf("%d", &datos->columnes);
-	} while(datos->columnes < 0 || datos->columnes > MAX);
+		scanf("%d", &datos->tablero.columnas);
+	} while(datos->tablero.columnas < 0 || datos->tablero.columnas > MAX);
 
 	printf("\n\nInicialitzant el taulell...");
 	omplirTaulell(datos);
 
 	printf("\n\nCreació de les embarcacions!\n");
 
-	do {
+	//TODO: Comprobar que funciona, se ha pasado a un bucle.
 
-		printf("\nPortavions");
-		printf("\nEntra la cordenada icinal: ");
-		scanf("%s", cordenada);
-		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
-		scanf("%d", &alineacio);
+	for (i = 0; i < 9; i++) {
+		do {
 
-	} while(!comprovaEmbarcacio(datos, cordenada, 4, alineacio, 0));
-	imprimirTaulell(*datos);
+			printf("\n%s", nombres[i]);
+			printf("\nEntra la cordenada icinal: ");
+			scanf("%s", cordenada);
+			if (i < 5) {
+				printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
+				scanf("%d", &alineacio);
+			}
+			else alineacio = 0;
 
-	do {
-
-		printf("\nDestructor A");
-		printf("\nEntra la cordenada icinal: ");
-		scanf("%s", cordenada);
-		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
-		scanf("%d", &alineacio);
-
-	} while(!comprovaEmbarcacio(datos, cordenada, 3, alineacio, 1));
-	imprimirTaulell(*datos);
-
-	do {
-
-		printf("\nDestructor B");
-		printf("\nEntra la cordenada icinal: ");
-		scanf("%s", cordenada);
-		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
-		scanf("%d", &alineacio);
-
-	} while(!comprovaEmbarcacio(datos, cordenada, 3, alineacio, 2));
-	imprimirTaulell(*datos);
-
-	do {
-
-		printf("\nFragata A");
-		printf("\nEntra la cordenada icinal: ");
-		scanf("%s", cordenada);
-		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
-		scanf("%d", &alineacio);
-
-	} while(!comprovaEmbarcacio(datos, cordenada, 2, alineacio, 3));
-	imprimirTaulell(*datos);
-
-	do {
-
-		printf("\nFragata B");
-		printf("\nEntra la cordenada icinal: ");
-		scanf("%s", cordenada);
-		printf("\nEntra l'alineació: (0 - Horitzontal | 1 - Vertical | 2 - Diagonal | 3 - Diagonal Inversa)\n\n\tOpció: ");
-		scanf("%d", &alineacio);
-
-	} while(!comprovaEmbarcacio(datos, cordenada, 2, alineacio, 4));
-	imprimirTaulell(*datos);
-
-	do {
-
-		printf("\nSubmari A");
-		printf("\nEntra la cordenada: ");
-		scanf("%s", cordenada);
-
-	} while(!comprovaEmbarcacio(datos, cordenada, 1, 0, 5));
-	imprimirTaulell(*datos);
-
-	do {
-
-		printf("\nSubmari B");
-		printf("\nEntra la cordenada: ");
-		scanf("%s", cordenada);
-
-	} while(!comprovaEmbarcacio(datos, cordenada, 1, 0, 6));
-	imprimirTaulell(*datos);
-
-	do {
-
-		printf("\nSubmari C");
-		printf("\nEntra la cordenada: ");
-		scanf("%s", cordenada);
-
-	} while(!comprovaEmbarcacio(datos, cordenada, 1, 0, 7));
-	imprimirTaulell(*datos);
-
-	do {
-
-		printf("\nSubmari D");
-		printf("\nEntra la cordenada: ");
-		scanf("%s", cordenada);
-
-	} while(!comprovaEmbarcacio(datos, cordenada, 1, 0, 8));
-	imprimirTaulell(*datos);
-
+		} while(!comprovaEmbarcacio(datos, cordenada, getMidaBarco(datos->flota[i].tipo), alineacio, i));
+		imprimirTaulell(*datos);
+	}
 
 	guardarConfig(*datos);
 
@@ -457,13 +324,13 @@ void modificarConfig(juego *datos) {
 			printf("\n\n\tEntra les files del taulell: ");
 			scanf("%d", &aux);
 
-			auxAnterior = datos->files;
+			auxAnterior = datos->tablero.filas;
 
-			datos->files = aux;
+			datos->tablero.filas = aux;
 
 			if (marcaNoModificats(datos, op) == TRUE) printf("\n\t\tFiles modificades amb éxit!\n");
 			else {
-				datos->files = auxAnterior;
+				datos->tablero.filas = auxAnterior;
 				printf("\n\t\tError al fer la modificació!\n");
 			}
 
@@ -473,12 +340,12 @@ void modificarConfig(juego *datos) {
 			printf("\n\n\tEntra les columnes del taulell: ");
 			scanf("%d", &aux);
 
-			auxAnterior = datos->columnes;
-			datos->columnes = aux;
+			auxAnterior = datos->tablero.columnas;
+			datos->tablero.columnas = aux;
 
 			if (marcaNoModificats(datos, op) == TRUE) printf("\n\t\tColumnes modificades amb éxit!\n");
 			else {
-				datos->columnes = auxAnterior;
+				datos->tablero.columnas = auxAnterior;
 				printf("\n\t\tError al fer la modificació!\n");
 			}
 
@@ -609,48 +476,19 @@ void modificarConfig(juego *datos) {
 
 boolean marcaNoModificats(juego *datos, int op) {
 
-	int i;
+	int i, j;
 	char cordenades[4][4];
 	boolean correcte = TRUE;
 
 	omplirTaulell(datos);
 
+	//TODO: Comprobar que funciona!
 
-	if (op != 3 && correcte) {
-		for (i = 0; i < 4; i++) snprintf(cordenades[i], sizeof(cordenades[i]), "%c%d", datos->portavions[i].fila, datos->portavions[i].columna);
-		correcte = comprovaEmbarcacio(datos, cordenades[0], 4, getAlineacio(cordenades, 4), 0);
-	}
-	if (op != 4 && correcte) {
-		for (i = 0; i < 3; i++) sprintf(cordenades[i], "%c%d", datos->destructorA[i].fila, datos->destructorA[i].columna);
-		correcte = comprovaEmbarcacio(datos, cordenades[0], 3, getAlineacio(cordenades, 3), 1);
-	}
-	if (op != 5 && correcte) {
-		for (i = 0; i < 3; i++) sprintf(cordenades[i], "%c%d", datos->destructorB[i].fila, datos->destructorB[i].columna);
-		correcte = comprovaEmbarcacio(datos, cordenades[0], 3, getAlineacio(cordenades, 3), 2);
-	}
-	if (op != 6 && correcte) {
-		for (i = 0; i < 2; i++) sprintf(cordenades[i], "%c%d", datos->fragataA[i].fila, datos->fragataA[i].columna);
-		correcte = comprovaEmbarcacio(datos, cordenades[0], 2, getAlineacio(cordenades, 2), 3);
-	}
-	if (op != 7 && correcte) {
-		for (i = 0; i < 2; i++) sprintf(cordenades[i], "%c%d", datos->fragataB[i].fila, datos->fragataB[i].columna);
-		correcte = comprovaEmbarcacio(datos, cordenades[0], 2, getAlineacio(cordenades, 2), 4);
-	}
-	if (op != 8 && correcte) {
-		sprintf(cordenades[0], "%c%d", datos->submarins[0][0].fila, datos->submarins[0][0].columna);
-		correcte = comprovaEmbarcacio(datos, cordenades[0], 1, getAlineacio(cordenades, 1), 5);
-	}
-	if (op != 9 && correcte) {
-		sprintf(cordenades[0], "%c%d", datos->submarins[1][0].fila, datos->submarins[1][0].columna);
-		correcte = comprovaEmbarcacio(datos, cordenades[0], 1, getAlineacio(cordenades, 1), 6);
-	}
-	if (op != 10 && correcte) {
-		sprintf(cordenades[0], "%c%d", datos->submarins[2][0].fila, datos->submarins[2][0].columna);
-		correcte = comprovaEmbarcacio(datos, cordenades[0], 1, getAlineacio(cordenades, 1), 7);
-	}
-	if (op != 11 && correcte) {
-		sprintf(cordenades[0], "%c%d", datos->submarins[3][0].fila, datos->submarins[3][0].columna);
-		correcte = comprovaEmbarcacio(datos, cordenades[0], 1, getAlineacio(cordenades, 1), 8);
+	for (i = 0; i < 9 && correcte; i++) {
+		for (j = 0; j < getMidaBarco(datos->flota[i].tipo); j++) {
+			snprintf(cordenades[i], sizeof(cordenades[i]), "%c%d", datos->flota[i].casillas[j].fila, datos->flota[i].casillas[j].columna);
+		}
+		correcte = comprovaEmbarcacio(datos, cordenades[0], getMidaBarco(datos->flota[i].tipo), getAlineacio(cordenades, getMidaBarco(datos->flota[i].tipo)), i);
 	}
 
 	return correcte;
@@ -659,6 +497,8 @@ boolean marcaNoModificats(juego *datos, int op) {
 
 
 boolean comprovaEmbarcacio(juego *datos, char cordenada[4], int mida, int alineacio, int embarcacio) {
+
+	//TODO: No hace falta pasar mida, se puede saber con el número de embarcación. getMidaBarco()
 
 	int i;
 	char cordenades[mida][4];
@@ -694,9 +534,9 @@ boolean comprovaEmbarcacio(juego *datos, char cordenada[4], int mida, int alinea
 	for (i = 0; i < mida; i++) {
 
 		if (!posicioValida(cordenades[i])) correcte = FALSE;
-		if (getFila(cordenades[i]) > 'A' + datos->files) correcte = FALSE;
-		if (getColumna(cordenades[i])  > datos->columnes) correcte = FALSE;
-		if (datos->taulell[getFila(cordenades[i]) - 'A'][getColumna(cordenades[i])] != '-') correcte = FALSE;
+		if (getFila(cordenades[i]) > 'A' + datos->tablero.filas) correcte = FALSE;
+		if (getColumna(cordenades[i])  > datos->tablero.columnas) correcte = FALSE;
+		if (casillas[getFila(cordenades[i]) - 'A'][getColumna(cordenades[i])] != '-') correcte = FALSE;
 
 	}
 
@@ -733,7 +573,7 @@ void marcarTaulell(juego *datos, char cordenades[4][4], int mida) {
 
 	for (i = 0; i < mida; i++) {
 
-		datos->taulell[getFila(cordenades[i])-'A'][getColumna(cordenades[i]) - 1] = lletra;
+		casillas[getFila(cordenades[i])-'A'][getColumna(cordenades[i]) - 1] = lletra;
 
 	}
 
@@ -741,47 +581,13 @@ void marcarTaulell(juego *datos, char cordenades[4][4], int mida) {
 
 void marcarStruct(juego *datos, char cordenades[4][4], int mida, int embarcacio) {
 
+	//TODO: Quitar el parámetro mida, no es necesario teniendo la embarcació. getMidaBarco();
+
 	int i = 0;
 	for (i = 0; i < mida; i++) {
 
-		switch(embarcacio) {
-			case 0:
-				datos->portavions[i].fila = getFila(cordenades[i]);
-				datos->portavions[i].columna = getColumna(cordenades[i]);
-			break;
-			case 1:
-				datos->destructorA[i].fila = getFila(cordenades[i]);
-				datos->destructorA[i].columna = getColumna(cordenades[i]);
-			break;
-			case 2:
-				datos->destructorB[i].fila = getFila(cordenades[i]);
-				datos->destructorB[i].columna = getColumna(cordenades[i]);
-			break;
-			case 3:
-				datos->fragataA[i].fila = getFila(cordenades[i]);
-				datos->fragataA[i].columna = getColumna(cordenades[i]);
-			break;
-			case 4:
-				datos->fragataB[i].fila = getFila(cordenades[i]);
-				datos->fragataB[i].columna = getColumna(cordenades[i]);
-			break;
-			case 5:
-				datos->submarins[0][i].fila = getFila(cordenades[i]);
-				datos->submarins[0][i].columna = getColumna(cordenades[i]);
-			break;
-			case 6:
-				datos->submarins[1][i].fila = getFila(cordenades[i]);
-				datos->submarins[1][i].columna = getColumna(cordenades[i]);
-			break;
-			case 7:
-				datos->submarins[2][i].fila = getFila(cordenades[i]);
-				datos->submarins[2][i].columna = getColumna(cordenades[i]);
-			break;
-			case 8:
-				datos->submarins[3][i].fila = getFila(cordenades[i]);
-				datos->submarins[3][i].columna = getColumna(cordenades[i]);
-			break;
-		}
+		datos->flota[embarcacio].casillas[i].fila = getFila(cordenades[i]);
+		datos->flota[embarcacio].casillas[i].columna = getColumna(cordenades[i]);
 
 	}
 
@@ -900,10 +706,25 @@ int getMidaBarco(char lletra) {
 	case 'F':
 		mida = 2;
 		break;
-	case 'D':
+	case 'S':
 		mida = 1;
 		break;
 	}
 
 	return mida;
+}
+
+void rellenarNombres() {
+
+	int i;
+
+	strcpy(nombres[0], "Portavions");
+	strcpy(nombres[1], "Destructor1");
+	strcpy(nombres[2], "Destructor2");
+	strcpy(nombres[3], "Fragata1");
+	strcpy(nombres[4], "Fragata2");
+	strcpy(nombres[5], "SubmariA");
+	strcpy(nombres[6], "SubmariB");
+	strcpy(nombres[7], "SubmariC");
+	strcpy(nombres[8], "SubmariD");
 }
