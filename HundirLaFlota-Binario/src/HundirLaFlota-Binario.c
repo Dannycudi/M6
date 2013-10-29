@@ -34,7 +34,6 @@ typedef struct tablero
 {
 	int filas;
 	int columnas;
-	char casillas[MAX][MAX];
 } tablero;
 
 typedef struct juego
@@ -42,6 +41,8 @@ typedef struct juego
 	tablero tablero;
 	barco flota[9];
 } juego;
+
+//Teclado SI * NO -
 
 void mostrarConfig(juego datos);
 void carregarConfig(juego *datos);
@@ -63,6 +64,9 @@ char getFila(char cad[10]);
 int getColumna(char cad[10]);
 boolean posicioValida(char cad[10]);
 int primerEspai(char cad[100]);
+int getMidaBarco(char lletra);
+
+char casillas[MAX][MAX];
 
 int main(void) {
 
@@ -81,7 +85,7 @@ void omplirTaulell(juego *datos) {
 
 	for (i = 0; i < datos->tablero.filas; i++) {
 		for (j = 0; j < datos->tablero.columnas; j++) {
-			datos->tablero.casillas[i][j] = '-';
+			casillas[i][j] = '-';
 		}
 	}
 
@@ -99,7 +103,7 @@ void imprimirTaulell(juego datos) {
 	for (i = 0; i < datos.tablero.filas; i++) {
 		printf("\t %c ", i + 'A');
 		for (j = 0; j < datos.tablero.columnas; j++) {
-			printf(" %c ", datos.tablero.casillas[i][j]);
+			printf(" %c ", casillas[i][j]);
 		}
 		printf("\n");
 	}
@@ -111,29 +115,30 @@ void mostrarConfig(juego datos) {
 	int i;
 
 	printf("\tTaulell\n\t\tFiles - %d \t Columnes - %d\n", datos.tablero.filas, datos.tablero.columnas);
+
 	printf("\n\tPortavions\n");
 	for (i = 0; i < 4; i++) {
-		printf("\t\tFila - %c \t Columna - %d\n", datos.portavions[i].fila, datos.portavions[i].columna);
+		printf("\t\tFila - %c \t Columna - %d\n", datos.flota[0].casillas[i].fila, datos.flota[0].casillas[i].columna);
 	}
 	printf("\n\tDestructorA\n");
 	for (i = 0; i < 3; i++) {
-		printf("\t\tFila - %c \t Columna - %d\n", datos.destructorA[i].fila, datos.destructorA[i].columna);
+		printf("\t\tFila - %c \t Columna - %d\n", datos.flota[1].casillas[i].fila, datos.flota[1].casillas[i].columna);
 	}
 	printf("\n\tDestructorB\n");
 	for (i = 0; i < 3; i++) {
-		printf("\t\tFila - %c \t Columna - %d\n", datos.destructorB[i].fila, datos.destructorB[i].columna);
+		printf("\t\tFila - %c \t Columna - %d\n", datos.flota[2].casillas[i].fila, datos.flota[2].casillas[i].columna);
 	}
 	printf("\n\tFragataA\n");
 	for (i = 0; i < 2; i++) {
-		printf("\t\tFila - %c \t Columna - %d\n", datos.fragataA[i].fila, datos.fragataA[i].columna);
+		printf("\t\tFila - %c \t Columna - %d\n", datos.flota[3].casillas[i].fila, datos.flota[3].casillas[i].columna);
 	}
 	printf("\n\tFragataB\n");
 	for (i = 0; i < 2; i++) {
-		printf("\t\tFila - %c \t Columna - %d\n", datos.fragataB[i].fila, datos.fragataB[i].columna);
+		printf("\t\tFila - %c \t Columna - %d\n", datos.flota[4].casillas[i].fila, datos.flota[4].casillas[i].columna);
 	}
 	printf("\n\tSubmarins\n");
 	for (i = 0; i < 4; i++) {
-		printf("\t\tFila - %c \t Columna - %d\n", datos.submarins[i][0].fila, datos.submarins[i][0].columna);
+		printf("\t\tFila - %c \t Columna - %d\n", datos.flota[5+i].casillas[0].fila, datos.flota[5+i].casillas[0].columna);
 	}
 
 	imprimirTaulell(datos);
@@ -146,46 +151,46 @@ void guardarConfig(juego datos) {
 	int i;
 
 	cfg = fopen("cfg.txt", "w");
-	fprintf(cfg, "taulell %dx%d\n", datos.files, datos.columnes);
+	fprintf(cfg, "taulell %dx%d\n", datos.tablero.filas, datos.tablero.columnas);
 
 	fprintf(cfg, "portavions ");
 	for (i = 0; i < 4; i++) {
-		fprintf(cfg, "%c%d", datos.portavions[i].fila, datos.portavions[i].columna);
+		fprintf(cfg, "%c%d", datos.flota[0].casillas[i].fila, datos.flota[0].casillas[i].columna);
 		if (i != 3) fprintf(cfg, ",");
 	}
 	fprintf(cfg, "\n");
 
 	fprintf(cfg, "destructor1 ");
 	for (i = 0; i < 3; i++) {
-		fprintf(cfg, "%c%d", datos.destructorA[i].fila, datos.destructorA[i].columna);
+		fprintf(cfg, "%c%d", datos.flota[1].casillas[i].fila, datos.flota[1].casillas[i].columna);
 		if (i != 2) fprintf(cfg, ",");
 	}
 	fprintf(cfg, "\n");
 
 	fprintf(cfg, "destructor2 ");
 	for (i = 0; i < 3; i++) {
-		fprintf(cfg, "%c%d", datos.destructorB[i].fila, datos.destructorB[i].columna);
+		fprintf(cfg, "%c%d", datos.flota[2].casillas[i].fila, datos.flota[2].casillas[i].columna);
 		if (i != 2) fprintf(cfg, ",");
 	}
 	fprintf(cfg, "\n");
 
 	fprintf(cfg, "fragata1 ");
 	for (i = 0; i < 2; i++) {
-		fprintf(cfg, "%c%d", datos.fragataA[i].fila, datos.fragataA[i].columna);
+		fprintf(cfg, "%c%d", datos.flota[3].casillas[i].fila, datos.flota[3].casillas[i].columna);
 		if (i != 1) fprintf(cfg, ",");
 	}
 	fprintf(cfg, "\n");
 
 	fprintf(cfg, "fragata2 ");
 	for (i = 0; i < 2; i++) {
-		fprintf(cfg, "%c%d", datos.fragataB[i].fila, datos.fragataB[i].columna);
+		fprintf(cfg, "%c%d", datos.flota[4].casillas[i].fila, datos.flota[4].casillas[i].columna);
 		if (i != 1) fprintf(cfg, ",");
 	}
 	fprintf(cfg, "\n");
 
 	fprintf(cfg, "submari ");
 	for (i = 0; i < 4; i++) {
-		fprintf(cfg, "%c%d", datos.submarins[i][0].fila, datos.submarins[i][0].columna);
+		fprintf(cfg, "%c%d", datos.flota[5+i].casillas[0].fila, datos.flota[5+i].casillas[0].columna);
 		if (i != 3) fprintf(cfg, ",");
 	}
 	fprintf(cfg, "\n");
@@ -223,8 +228,8 @@ void carregarConfig(juego *datos) {
 
 	//Taulell - fread(cadena, sizeof(char), 14, cfg);
 	fgets(cadena, 81, cfg);
-	datos->files = atoi(&cadena[7]);
-	datos->columnes = atoi(&cadena[11]);
+	datos->tablero.filas = atoi(&cadena[7]);
+	datos->tablero.columnas = atoi(&cadena[11]);
 
 	omplirTaulell(datos);
 
@@ -879,4 +884,26 @@ int primerEspai(char cad[100]) {
 
 	return espai;
 
+}
+
+int getMidaBarco(char lletra) {
+
+	int mida;
+
+	switch(lletra) {
+	case 'P':
+		mida = 4;
+		break;
+	case 'D':
+		mida = 3;
+		break;
+	case 'F':
+		mida = 2;
+		break;
+	case 'D':
+		mida = 1;
+		break;
+	}
+
+	return mida;
 }
