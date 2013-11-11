@@ -91,14 +91,16 @@ int primerEspai(char cad[100]);
 int getMidaBarco(char lletra);
 char getInicialBarco(int num);
 void rellenarNombres();
+void canviarArxiu();
 
-char casillas[MAX][MAX], nombres[9][20];
+char casillas[MAX][MAX], nombres[9][20], arxiu[50];
 
 int main(void) {
 
 	int op;
 	juego datos;
 	rellenarNombres();
+	strcpy(arxiu, "cfg.dat");
 
 	datos.tablero.filas = -1;
 	datos.tablero.columnas = -1;
@@ -109,40 +111,44 @@ int main(void) {
 		switch(op) {
 
 		case 1:
-			if (midaFitxer("cfg.dat")) {
+			if (midaFitxer(arxiu)) {
 				carregarConfig(&datos);
 				imprimirTaulell(datos);
-				printf("\n\n\t"VERDECLARO"Fitxer de configuració carregat amb éxit!\n\n"BLANCO);
+				printf("\n\n\t"VERDECLARO"Fitxer de configuració '%s' carregat amb éxit!\n\n"BLANCO, arxiu);
 			}
-			else printf(ROJO"\n\tNo s'ha pogut carregar el fitxer de configuració 'cfg.dat'."BLANCO);
+			else printf(ROJO"\n\tNo s'ha pogut carregar el fitxer de configuració '%s'."BLANCO, arxiu);
 			break;
 		case 2:
 			crearConfig(&datos);
-			printf("\n\n\tFitxer de configuració creat amb éxit. cfg.dat!\n");
+			printf(VERDE"\n\n\tFitxer de configuració creat amb éxit. %s!\n"BLANCO, arxiu);
 			break;
 		case 3:
-			if (midaFitxer("cfg.dat") && (datos.tablero.columnas != -1 && datos.tablero.filas != -1)) {
+			if (midaFitxer(arxiu) && (datos.tablero.columnas != -1 && datos.tablero.filas != -1)) {
 				modificarConfig(&datos);
+				carregarConfig(&datos); //TODO: Mirar de arreglarlo, no debería hacer falta.
 			}
-			else printf("\n\n\t\tNo es troba una configuració a modificar.\n\t\tIntenta llegir o crear-la abans.\n\n");
+			else printf(ROJO"\n\n\t\tNo es troba una configuració a modificar.\n\t\tIntenta llegir o crear-la abans.\n\n"BLANCO);
 			break;
 		case 4:
-			if (midaFitxer("cfg.dat") && (datos.tablero.columnas != -1 && datos.tablero.filas != -1)) {
+			if (midaFitxer(arxiu) && (datos.tablero.columnas != -1 && datos.tablero.filas != -1)) {
 				eliminarConfig(&datos);
 			}
-			else printf("\n\n\t\tNo es troba una configuració a eliminar.\n\t\tIntenta llegir o crear-la abans.\n\n");
+			else printf(ROJO"\n\n\t\tNo es troba una configuració a eliminar.\n\t\tIntenta llegir o crear-la abans.\n\n"BLANCO);
 			break;
 		case 5:
-			if (midaFitxer("cfg.dat")) {// && (datos.tablero.columnas != -1 && datos.tablero.filas != -1)) {
+			if (midaFitxer(arxiu)) {// && (datos.tablero.columnas != -1 && datos.tablero.filas != -1)) {
 				mostrarConfig(datos);
 			}
-			else printf("\n\n\t\tNo es troba una configuració a mostrar.\n\t\tIntenta llegir o crear-la abans.\n\n");
+			else printf(ROJO"\n\n\t\tNo es troba una configuració a mostrar.\n\t\tIntenta llegir o crear-la abans.\n\n"BLANCO);
+			break;
+		case 6:
+			canviarArxiu();
 			break;
 		}
 
 		printf("\n\n");
 
-	} while(op != 6);
+	} while(op != 7);
 
 
 	return 0;
@@ -240,11 +246,11 @@ void guardarConfig(juego datos) {
 
 	FILE *cfg;
 
-	cfg = fopen("cfg.dat", "w+b");
+	cfg = fopen(arxiu, "w+b");
 
 	fwrite(&datos, sizeof(datos), 1, cfg);
 
-	printf("%d", (int)ftell(cfg));
+	//printf("%d", (int)ftell(cfg));
 
 	fclose(cfg);
 
@@ -276,7 +282,7 @@ void carregarConfig(juego *datos) {
 	char cordenades[4][4];
 	int i, j;
 
-	cfg = fopen("cfg.dat", "r+b");
+	cfg = fopen(arxiu, "r+b");
 	fread(datos, sizeof(juego), 1, cfg);
 
 	omplirTaulell(datos);
@@ -364,10 +370,10 @@ void modificarConfig(juego *datos) {
 
 			datos->tablero.filas = aux;
 
-			if (marcaNoModificats(datos, op) == TRUE) printf("\n\t\tFiles modificades amb éxit!\n");
+			if (marcaNoModificats(datos, op) == TRUE) printf(VERDE"\n\t\tFiles modificades amb éxit!\n"BLANCO);
 			else {
 				datos->tablero.filas = auxAnterior;
-				printf("\n\t\tError al fer la modificació!\n");
+				printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -379,10 +385,10 @@ void modificarConfig(juego *datos) {
 			auxAnterior = datos->tablero.columnas;
 			datos->tablero.columnas = aux;
 
-			if (marcaNoModificats(datos, op) == TRUE) printf("\n\t\tColumnes modificades amb éxit!\n");
+			if (marcaNoModificats(datos, op) == TRUE) printf(VERDE"\n\t\tColumnes modificades amb éxit!\n"BLANCO);
 			else {
 				datos->tablero.columnas = auxAnterior;
-				printf("\n\t\tError al fer la modificació!\n");
+				printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -395,8 +401,8 @@ void modificarConfig(juego *datos) {
 			scanf("%d", &aux);
 
 			if (marcaNoModificats(datos, op) == TRUE) {
-				if (comprovaEmbarcacio(datos, cordenada, 4, aux, 0)) printf("\n\t\tPortavions modificat amb éxit!\n");
-				else printf("\n\t\tError al fer la modificació!\n");
+				if (comprovaEmbarcacio(datos, cordenada, 4, aux, 0)) printf(VERDE"\n\t\tPortavions modificat amb éxit!\n"BLANCO);
+				else printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -409,8 +415,8 @@ void modificarConfig(juego *datos) {
 			scanf("%d", &aux);
 
 			if (marcaNoModificats(datos, op) == TRUE) {
-				if (comprovaEmbarcacio(datos, cordenada, 3, aux, 1)) printf("\n\t\tDestructorA modificat amb éxit!\n");
-				else printf("\n\t\tError al fer la modificació!\n");
+				if (comprovaEmbarcacio(datos, cordenada, 3, aux, 1)) printf(VERDE"\n\t\tDestructorA modificat amb éxit!\n"BLANCO);
+				else printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -423,8 +429,8 @@ void modificarConfig(juego *datos) {
 			scanf("%d", &aux);
 
 			if (marcaNoModificats(datos, op) == TRUE) {
-				if (comprovaEmbarcacio(datos, cordenada, 3, aux, 2)) printf("\n\t\tDestructorB modificat amb éxit!\n");
-				else printf("\n\t\tError al fer la modificació!\n");
+				if (comprovaEmbarcacio(datos, cordenada, 3, aux, 2)) printf(VERDE"\n\t\tDestructorB modificat amb éxit!\n"BLANCO);
+				else printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -437,8 +443,8 @@ void modificarConfig(juego *datos) {
 			scanf("%d", &aux);
 
 			if (marcaNoModificats(datos, op) == TRUE) {
-				if (comprovaEmbarcacio(datos, cordenada, 2, aux, 3)) printf("\n\t\tFragataA modificat amb éxit!\n");
-				else printf("\n\t\tError al fer la modificació!\n");
+				if (comprovaEmbarcacio(datos, cordenada, 2, aux, 3)) printf(VERDE"\n\t\tFragataA modificat amb éxit!\n"BLANCO);
+				else printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -451,8 +457,8 @@ void modificarConfig(juego *datos) {
 			scanf("%d", &aux);
 
 			if (marcaNoModificats(datos, op) == TRUE) {
-				if (comprovaEmbarcacio(datos, cordenada, 2, aux, 4)) printf("\n\t\tFragataB modificat amb éxit!\n");
-				else printf("\n\t\tError al fer la modificació!\n");
+				if (comprovaEmbarcacio(datos, cordenada, 2, aux, 4)) printf(VERDE"\n\t\tFragataB modificat amb éxit!\n"BLANCO);
+				else printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -463,8 +469,8 @@ void modificarConfig(juego *datos) {
 			scanf("%s", cordenada);
 
 			if (marcaNoModificats(datos, op) == TRUE) {
-				if (comprovaEmbarcacio(datos, cordenada, 1, aux, 5)) printf("\n\t\tSubmariA modificat amb éxit!\n");
-				else printf("\n\t\tError al fer la modificació!\n");
+				if (comprovaEmbarcacio(datos, cordenada, 1, aux, 5)) printf(VERDE"\n\t\tSubmariA modificat amb éxit!\n"BLANCO);
+				else printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -475,8 +481,8 @@ void modificarConfig(juego *datos) {
 			scanf("%s", cordenada);
 
 			if (marcaNoModificats(datos, op) == TRUE) {
-				if (comprovaEmbarcacio(datos, cordenada, 1, aux, 6)) printf("\n\t\tSubmariB modificat amb éxit!\n");
-				else printf("\n\t\tError al fer la modificació!\n");
+				if (comprovaEmbarcacio(datos, cordenada, 1, aux, 6)) printf(VERDE"\n\t\tSubmariB modificat amb éxit!\n"BLANCO);
+				else printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -487,8 +493,8 @@ void modificarConfig(juego *datos) {
 			scanf("%s", cordenada);
 
 			if (marcaNoModificats(datos, op) == TRUE) {
-				if (comprovaEmbarcacio(datos, cordenada, 1, aux, 7)) printf("\n\t\tSubmariC modificat amb éxit!\n");
-				else printf("\n\t\tError al fer la modificació!\n");
+				if (comprovaEmbarcacio(datos, cordenada, 1, aux, 7)) printf(VERDE"\n\t\tSubmariC modificat amb éxit!\n"BLANCO);
+				else printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -499,8 +505,8 @@ void modificarConfig(juego *datos) {
 			scanf("%s", cordenada);
 
 			if (marcaNoModificats(datos, op) == TRUE) {
-				if (comprovaEmbarcacio(datos, cordenada, 1, aux, 8)) printf("\n\t\tSubmariD	 modificat amb éxit!\n");
-				else printf("\n\t\tError al fer la modificació!\n");
+				if (comprovaEmbarcacio(datos, cordenada, 1, aux, 8)) printf(VERDE"\n\t\tSubmariD modificat amb éxit!\n"BLANCO);
+				else printf(ROJO"\n\t\tError al fer la modificació!\n"BLANCO);
 			}
 
 			break;
@@ -568,15 +574,19 @@ boolean comprovaEmbarcacio(juego *datos, char cordenada[4], int mida, int alinea
 		}
 
 	}
-	printf("\n");
 
+	printf("%s %d - \n", cordenada, embarcacio);
 	for (i = 0; i < mida; i++) {
 
 		if (!posicioValida(cordenades[i])) correcte = FALSE;
+		printf("%d", correcte);
 		if (getFila(cordenades[i]) > 'A' + datos->tablero.filas) correcte = FALSE;
-		if (getColumna(cordenades[i])  > datos->tablero.columnas) correcte = FALSE;
-		if (casillas[getFila(cordenades[i]) - 'A'][getColumna(cordenades[i])] != '-') correcte = FALSE;
-
+		printf("%d", correcte);
+		if (getColumna(cordenades[i]) > datos->tablero.columnas) correcte = FALSE;
+		printf("%d", correcte);
+		if (casillas[getFila(cordenades[i]) - 'A'][getColumna(cordenades[i]) -1] != '-') correcte = FALSE;
+		printf("%d", correcte);
+		printf("\n");
 	}
 
 	if (correcte) {
@@ -630,6 +640,14 @@ void marcarStruct(juego *datos, char cordenades[4][4], int mida, int embarcacio)
 		datos->flota[embarcacio].casillas[i].columna = getColumna(cordenades[i]);
 
 	}
+
+}
+
+void canviarArxiu() {
+
+	printf(BLANCO"\n\n\tEntra el nom de l'arxiu de configuració: "CAFE);
+	scanf("%s", arxiu);
+	printf(BLANCO);
 
 }
 
@@ -709,13 +727,13 @@ int opcioMenu() {
 	int op;
 
 	do {
-		printf(BLANCO_S"\n\n\tMENÚ PRINCIPAL\n\n"BLANCO);
-		printf("\t"VERDE"1)"BLANCO" Llegir configuració\n\t"VERDE"2)"BLANCO" Crear configuració\n\t"VERDE"3)"BLANCO" Modificar configuració\n\t"VERDE"4)"BLANCO" Eliminar configuració\n\t"VERDE"5)"BLANCO" Mostra Configuració\n\t"VERDE"6)"BLANCO" Srotir");
+		printf(BLANCO_S"\n\n\tMENÚ PRINCIPAL\t\t\t"BLANCO CAFE"'%s'\n\n"BLANCO, arxiu);
+		printf("\t"VERDE"1)"BLANCO" Llegir configuració\n\t"VERDE"2)"BLANCO" Crear configuració\n\t"VERDE"3)"BLANCO" Modificar configuració\n\t"VERDE"4)"BLANCO" Eliminar configuració\n\t"VERDE"5)"BLANCO" Mostra Configuració\n\t"VERDE"6)"BLANCO" Canviar arxiu de configuració\n\t"VERDE"7)"BLANCO" Srotir");
 		printf("\n\n\t\tOpció: "AMARILLO);
 		scanf("%d", &op);
 		printf(BLANCO);
 	}
-	while (op < 1 || op > 6);
+	while (op < 1 || op > 7);
 
 	return op;
 }
