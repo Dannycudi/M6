@@ -1,13 +1,13 @@
 /*
  ============================================================================
- Name        : HundirLaFlota-Binario.c
- Author      : Dannycudi
- Version     : 1.0
- Copyright   : Dannycudi
- Description : Juego Hundir La Flota guardando en Binario
- 	 	 	   AIGUA '-'   AIGUA tocada  '*'    TOCAT 'T'    ENFONSAT  'E'
+ Name        : HundirLaFlota-Colores.c
+ Author      :
+ Version     :
+ Copyright   : Your copyright notice
+ Description : Hello World in C, Ansi-style
  ============================================================================
  */
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +19,7 @@
 #define MAX 25
 
 /* Colores Linux
-	Negro       0;30     Gris Obscuro  1;30
+	Negro       0;30     Gris Obscuro  1;30		Subrayado Negro 	4;30
 	Azul        0;34     Azul Claro    1;34
 	Verde       0;32     Verde Claro   1;32
 	Cyan        0;36     Cyan Claro    1;36
@@ -29,18 +29,20 @@
 	Gris Claro  0;37     Blanco        1;37
  */
 
-#define WHITE "e[m"
-#define RED "e[0;31m"
-#define B_RED "e[31;1m"
-#define GREEN "e[32m"
-#define B_GREEN "e[32;1m"
-#define YELLOW "e[33m"
-#define B_YELLOW "e[33;1m"
-#define BLUE "e[34m"
-#define B_BLUE "e[34;1m"
-#define MAGENTA "e[35m"
-#define CYAN "e[36m"
-#define BRIGHT "e[1m"
+#define BLANCO "\e[m"
+#define ROJO "\e[31m"
+#define ROJOCLARO "\e[1;31m"
+#define VERDE "\e[32m"
+#define VERDECLARO "\e[1;32m"
+#define CAFE "\e[33m"
+#define AMARILLO "\e[1;33m"
+#define AZUL "\e[34m"
+#define MAGENTA "\e[35m"
+#define FUCSIA "\e[1;35m"
+#define CYAN "\e[36m"
+#define CYANCLARO "\e[1;36m"
+
+#define BLANCO_S "\e[4m"
 
 typedef struct posicion
 {
@@ -110,10 +112,9 @@ int main(void) {
 			if (midaFitxer("cfg.dat")) {
 				carregarConfig(&datos);
 				imprimirTaulell(datos);
-				printf("%c", casillas[1][0]);
-				printf("\n\n\tFitxer de configuració carregat amb éxit!\n\n");
+				printf("\n\n\t"VERDECLARO"Fitxer de configuració carregat amb éxit!\n\n"BLANCO);
 			}
-			else printf("\t\tNo s'ha pogut carregar el fitxer de configuració 'cfg.dat'.");
+			else printf(ROJO"\n\tNo s'ha pogut carregar el fitxer de configuració 'cfg.dat'."BLANCO);
 			break;
 		case 2:
 			crearConfig(&datos);
@@ -164,16 +165,36 @@ void omplirTaulell(juego *datos) {
 void imprimirTaulell(juego datos) {
 
 	int i, j;
-	printf("\n\n\n\t   ");
+	printf("\n\n\n\t    "BLANCO_S" ");
 	for (i = 0; i < datos.tablero.columnas; i++) {
-		if (i < 10) printf(" %d ", i + 1);
+		if (i == 0) printf("%d ", i + 1);
+		else if (i < 10) printf(" %d ", i + 1);
 		else printf("%d ", i + 1);
 	}
-	printf("\n");
+	printf(BLANCO"\n");
 	for (i = 0; i < datos.tablero.filas; i++) {
-		printf("\t %c ", i + 'A');
+		printf("\t %c %c", i + 'A', 124);
 		for (j = 0; j < datos.tablero.columnas; j++) {
-			printf(" %c ", casillas[i][j]);
+			switch(casillas[i][j]) {
+			case '-':
+				printf(CYAN" %c "BLANCO, casillas[i][j]);
+				break;
+			case 'P':
+				printf(AMARILLO" %c "BLANCO, casillas[i][j]);
+				break;
+			case 'F':
+				printf(VERDECLARO" %c "BLANCO, casillas[i][j]);
+				break;
+			case 'D':
+				printf(FUCSIA" %c "BLANCO, casillas[i][j]);
+				break;
+			case 'S':
+				printf(ROJOCLARO" %c "BLANCO, casillas[i][j]);
+				break;
+			default:
+				printf(" %c ", casillas[i][j]);
+			}
+
 		}
 		printf("\n");
 	}
@@ -233,17 +254,18 @@ void eliminarConfig(juego *datos) {
 
 	char op;
 
-	printf("\n\tLa configuración actual está a punto de eliminarse. ");
+	printf(CAFE"\n\tLa configuración actual está a punto de eliminarse. "BLANCO);
 	do {
-		printf("\n\n\t\t¿Estás seguro? (s/n): ");
+		printf("\n\n\t\t¿Estás seguro? (s/n): "VERDE);
 		getchar();
 		scanf("%c", &op);
+		printf(BLANCO);
 	}
 	while(op != 's' && op != 'n' && op != 'S' && op != 'N');
 
 	if (op == 's' || op == 'S') {
 		remove("cfg.txt");
-		printf("\n\t\tFitxer 'cfg.txt' de configuració eliminat amb éxit!\n");
+		printf(VERDECLARO"\n\t\tFitxer 'cfg.txt' de configuració eliminat amb éxit!\n"BLANCO);
 	}
 
 }
@@ -310,6 +332,7 @@ void crearConfig(juego *datos) {
 		} while(!comprovaEmbarcacio(datos, cordenada, getMidaBarco(getInicialBarco(i)), alineacio, i));
 		imprimirTaulell(*datos);
 	}
+
 
 	guardarConfig(*datos);
 
@@ -686,10 +709,11 @@ int opcioMenu() {
 	int op;
 
 	do {
-		printf("\n\nMENÚ PRINCIPAL\n\n");
-		printf("\t1) Llegir configuració\n\t2) Crear configuració\n\t3) Modificar configuració\n\t4) Eliminar configuració\n\t5) Mostra Configuració\n\t6) Srotir");
-		printf("\n\n\t\tOpció: ");
+		printf(BLANCO_S"\n\n\tMENÚ PRINCIPAL\n\n"BLANCO);
+		printf("\t"VERDE"1)"BLANCO" Llegir configuració\n\t"VERDE"2)"BLANCO" Crear configuració\n\t"VERDE"3)"BLANCO" Modificar configuració\n\t"VERDE"4)"BLANCO" Eliminar configuració\n\t"VERDE"5)"BLANCO" Mostra Configuració\n\t"VERDE"6)"BLANCO" Srotir");
+		printf("\n\n\t\tOpció: "AMARILLO);
 		scanf("%d", &op);
+		printf(BLANCO);
 	}
 	while (op < 1 || op > 6);
 
