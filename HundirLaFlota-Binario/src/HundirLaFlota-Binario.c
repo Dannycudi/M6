@@ -15,6 +15,8 @@
 #include <math.h>
 #include <ctype.h>
 #include "boolean.h"
+#include <unistd.h>
+#include <sys/wait.h>
 
 #define MAX 25
 
@@ -281,9 +283,18 @@ void carregarConfig(juego *datos) {
 	FILE *cfg;
 	char cordenades[4][4];
 	int i, j;
+	pid_t hijo;
 
-	cfg = fopen(arxiu, "r+b");
-	fread(datos, sizeof(juego), 1, cfg);
+	if ((hijo=vfork()) == 0) {
+		cfg = fopen(arxiu, "r+b");
+		fread(datos, sizeof(juego), 1, cfg);
+		fclose(cfg);
+		_exit(0);
+	}
+	else {
+		hijo=wait(&i);
+		printf("Exit del hijo %d: %d", hijo, i);
+	}
 
 	omplirTaulell(datos);
 
@@ -294,7 +305,7 @@ void carregarConfig(juego *datos) {
 		marcarTaulell(datos, cordenades, getMidaBarco(datos->flota[i].tipo));
 	}
 
-	fclose(cfg);
+
 
 }
 
@@ -320,8 +331,6 @@ void crearConfig(juego *datos) {
 	omplirTaulell(datos);
 
 	printf("\n\nCreació de les embarcacions!\n");
-
-	//TODO: Comprobar que funciona, se ha pasado a un bucle.
 
 	for (i = 0; i < 9; i++) {
 		do {
@@ -523,8 +532,6 @@ boolean marcaNoModificats(juego *datos, int op) {
 	boolean correcte = TRUE;
 
 	omplirTaulell(datos);
-
-	//TODO: Comprobar que funciona!
 
 	for (i = 0; i < 9 && correcte; i++) {
 		if (op != i) {
