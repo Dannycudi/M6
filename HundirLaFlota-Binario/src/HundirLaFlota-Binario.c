@@ -94,8 +94,12 @@ int getMidaBarco(char lletra);
 char getInicialBarco(int num);
 void rellenarNombres();
 void canviarArxiu();
+void canviarTurno();
+void opcioJugador();
 
 char casillas[MAX][MAX], nombres[9][20], arxiu[50];
+char casillasJ1[MAX][MAX], casillasJ2[MAX][MAX], resultadosJ1[MAX][MAX], resultadosJ2[MAX][MAX];
+int turno = 1;
 
 int main(void) {
 
@@ -107,12 +111,16 @@ int main(void) {
 	datos.tablero.filas = -1;
 	datos.tablero.columnas = -1;
 
+	opcioJugador();
+
 	do {
 		op = opcioMenu();
 
 		switch(op) {
 
 		case 1:
+
+			canviarArxiu();
 			if (midaFitxer(arxiu)) {
 				carregarConfig(&datos);
 				imprimirTaulell(datos);
@@ -120,37 +128,55 @@ int main(void) {
 			}
 			else printf(ROJO"\n\tNo s'ha pogut carregar el fitxer de configuració '%s'."BLANCO, arxiu);
 			break;
+
 		case 2:
+
+			canviarArxiu();
 			crearConfig(&datos);
 			printf(VERDE"\n\n\tFitxer de configuració creat amb éxit. %s!\n"BLANCO, arxiu);
 			break;
+
 		case 3:
+
+			canviarArxiu();
 			if (midaFitxer(arxiu) && (datos.tablero.columnas != -1 && datos.tablero.filas != -1)) {
 				modificarConfig(&datos);
 				carregarConfig(&datos); //TODO: Mirar de arreglarlo, no debería hacer falta.
 			}
 			else printf(ROJO"\n\n\t\tNo es troba una configuració a modificar.\n\t\tIntenta llegir o crear-la abans.\n\n"BLANCO);
 			break;
+
 		case 4:
+
+			canviarArxiu();
 			if (midaFitxer(arxiu) && (datos.tablero.columnas != -1 && datos.tablero.filas != -1)) {
 				eliminarConfig(&datos);
 			}
 			else printf(ROJO"\n\n\t\tNo es troba una configuració a eliminar.\n\t\tIntenta llegir o crear-la abans.\n\n"BLANCO);
 			break;
+
 		case 5:
+
+			canviarArxiu();
 			if (midaFitxer(arxiu)) {// && (datos.tablero.columnas != -1 && datos.tablero.filas != -1)) {
 				mostrarConfig(datos);
 			}
 			else printf(ROJO"\n\n\t\tNo es troba una configuració a mostrar.\n\t\tIntenta llegir o crear-la abans.\n\n"BLANCO);
 			break;
+
 		case 6:
 			canviarArxiu();
+			break;
+
+		case 7:
+			opcioJugador();
+			system("clear");
 			break;
 		}
 
 		printf("\n\n");
 
-	} while(op != 7);
+	} while(op != 9);
 
 
 	return 0;
@@ -734,17 +760,35 @@ int opcioMenu() {
 	int op;
 
 	do {
-		printf(BLANCO_S"\n\n\tMENÚ PRINCIPAL\t\t\t"BLANCO CAFE"'%s'\n\n"BLANCO, arxiu);
-		printf("\t"VERDE"1)"BLANCO" Llegir configuració\n\t"VERDE"2)"BLANCO" Crear configuració\n\t"VERDE"3)"BLANCO" Modificar configuració\n\t"VERDE"4)"BLANCO" Eliminar configuració\n\t"VERDE"5)"BLANCO" Mostra Configuració\n\t"VERDE"6)"BLANCO" Canviar arxiu de configuració\n\t"VERDE"7)"BLANCO" Srotir");
+		printf(BLANCO_S"\n\n\tMENÚ PRINCIPAL\t\t\t"BLANCO CAFE"'Jugador %d'\n\n"BLANCO, turno);
+		printf("\t"VERDE"1)"BLANCO" Llegir configuració\n\t"VERDE"2)"BLANCO" Crear configuració\n");
+		printf("\t"VERDE"3)"BLANCO" Modificar configuració\n\t"VERDE"4)"BLANCO" Eliminar configuració\n");
+		printf("\t"VERDE"5)"BLANCO" Mostra Configuració\n\t"VERDE"6)"BLANCO" Canviar arxiu de configuració\n");
+		printf("\t"VERDE"7)"BLANCO" Canviar de Jugador\n\t"VERDE"8)"BLANCO" JUGAR!\n\t"VERDE"9)"BLANCO" Srotir");
 		printf("\n\n\t\tOpció: "AMARILLO);
 		scanf("%d", &op);
 		printf(BLANCO);
 	}
-	while (op < 1 || op > 7);
+	while (op < 1 || op > 9);
 
 	return op;
 }
 
+void opcioJugador() {
+
+	int op;
+
+	do {
+		printf(BLANCO_S"\n\n\t¿QUIN JUGADOR?"BLANCO"\n\n\t"VERDE"Escull un jugador ("CAFE"1-2"VERDE"):"BLANCO);
+		printf("\n\n\t\tJugador: "AMARILLO);
+		scanf("%d", &op);
+		printf(BLANCO);
+	}
+	while (op < 1 || op > 2);
+
+	turno = op;
+
+}
 
 int primerEspai(char cad[100]) {
 
@@ -797,4 +841,10 @@ void rellenarNombres() {
 	strcpy(nombres[6], "SubmariB");
 	strcpy(nombres[7], "SubmariC");
 	strcpy(nombres[8], "SubmariD");
+}
+void canviarTurno() {
+
+	if (turno == 1) turno = 2;
+	else turno = 1;
+
 }
